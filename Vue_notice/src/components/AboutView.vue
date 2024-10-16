@@ -1,4 +1,5 @@
 <template>
+  <v-container>
   <div>
     <h1>메시지 목록</h1>
     <ul>
@@ -7,15 +8,25 @@
       </li>
     </ul>
   </div>
+
+  <v-btn
+  @click="PostId"
+  >보내기</v-btn>
+
+  <v-text-field
+            v-model="content"
+            label="내용"
+          ></v-text-field>
+</v-container>
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
     return {
-      messages: []  // 서버에서 가져온 메시지 리스트를 저장
+      messages: [],  // 서버에서 가져온 메시지 리스트를 저장,
+      content: ''
     };
   },
   mounted() {
@@ -23,16 +34,21 @@ export default {
     this.getMessages();
   },
   methods: {
-    getMessages() {
-      axios.get('http://localhost:8080/api/messages')
-        .then((response) => {
-          this.messages = response.data;  // 서버로부터 받은 데이터를 messages 배열에 저장
-          console.log(this.messages)
-        })
-        .catch((error) => {
-          console.error('메시지 가져오기 실패:', error);
-        });
+    async getMessages() {
+      const response = await this.$axios.get('http://localhost:8080/api/messages/find')
+      this.messages = response.data
+    },
+    async PostId(){
+      console.log(this.messages[0].id)
+      const postId = {
+        id : this.messages[0].id,
+        message: this.content
+      }
+
+      console.log(postId)
+      await this.$axios.post("http://localhost:8080/api/messages/update", postId)
     }
+
   }
 };
 </script>
