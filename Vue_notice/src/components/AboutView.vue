@@ -1,12 +1,11 @@
 <template>
   <div>
-    <h1>메시지 수정</h1>
-    <input v-model="message" placeholder="메시지를 입력하세요" />
-    <button @click="sendMessage">메시지 보내기</button>
-    <div v-if="updatedMessage">
-      <h3>수정된 메시지:</h3>
-      <p>{{ updatedMessage }}</p>
-    </div>
+    <h1>메시지 목록</h1>
+    <ul>
+      <li v-for="message in messages" :key="message.id">
+        {{ message.message }}
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -16,19 +15,22 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      message: '',
-      updatedMessage: '' // 수정된 메시지를 저장할 변수
+      messages: []  // 서버에서 가져온 메시지 리스트를 저장
     };
   },
+  mounted() {
+    // 페이지가 로드될 때 서버로부터 메시지 데이터를 가져옵니다.
+    this.getMessages();
+  },
   methods: {
-    sendMessage() {
-      axios.post('http://localhost:8080/api/messages', { message: this.message })
+    getMessages() {
+      axios.get('http://localhost:8080/api/messages')
         .then((response) => {
-          // 서버에서 반환된 수정된 메시지를 저장
-          this.updatedMessage = response.data.message;
+          this.messages = response.data;  // 서버로부터 받은 데이터를 messages 배열에 저장
+          console.log(this.messages)
         })
         .catch((error) => {
-          console.error('메시지 전송 실패:', error);
+          console.error('메시지 가져오기 실패:', error);
         });
     }
   }
