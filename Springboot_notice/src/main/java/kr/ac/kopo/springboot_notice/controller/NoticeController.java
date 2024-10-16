@@ -61,5 +61,13 @@ public class NoticeController {
         }
     }
 
+    // POST 방식으로 메시지를 추가하는 메서드
+    @PostMapping("/add")
+    public ResponseEntity<NoticeEntity> addMessage(@RequestBody NoticeEntity noticeEntity) {
+        // 새로운 메시지를 데이터베이스에 저장
+        NoticeEntity savedMessage = noticeRepository.save(noticeEntity);
+        return ResponseEntity.ok(savedMessage);  // 저장된 메시지를 반환
+    }
+
 }
 
