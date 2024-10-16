@@ -1,24 +1,21 @@
 package kr.ac.kopo.springboot_notice.dto;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 public class NoticeDTO {
-    // 어떤 데이터를 받아올 건지 선언
-    private String message;
 
 
-    // 받아온 데이터를 외부로 리턴
-    public String getMessage() {
-        return message;
-    }
+    private String title; // 제목
 
-    // 외부 데이터를 내부로 전환
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    private String content; // 내용
+
+    private String writer; // 작성자
+
+    private String time; // 작성 및 수정 시간
 
 }

@@ -4,33 +4,24 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Entity
 @Getter
 @Setter
+@Entity
 public class NoticeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String message;
+    private String title; // 제목
 
-    public Long getId() {
-        return id;
-    }
+    private String content; // 내용
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private String writer; // 작성자
 
-    public String getMessage() {
-        return message;
-    }
+    private String time; // 작성 및 수정 시간
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+
 }

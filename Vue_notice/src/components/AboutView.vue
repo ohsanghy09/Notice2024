@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <div>
-      <h1>메시지 목록</h1>
+      <h1>공지사항 목록</h1>
       <ul>
         <li v-for="message in messages" :key="message.id">
           {{ message.id }}<br />
@@ -10,17 +10,12 @@
       </ul>
     </div>
 
-    <v-btn @click="PostMessage">보내기</v-btn>
+    <v-text-field v-model="notice_title" label="제목"></v-text-field>
+    <v-text-field v-model="notice_content" label="내용"></v-text-field>
+    <v-text-field v-model="notice_writer" label="작성자"></v-text-field>
+    <v-text-field v-model="notice_time" label="시간"></v-text-field>
 
-    <v-text-field v-model="content" label="내용"></v-text-field>
-
-    <v-btn @click="DeleteMessage">삭제하기</v-btn>
-
-    <v-text-field v-model="deleteId" label="아이디 번호"></v-text-field>
-
-    <v-btn @click="AddMessage">추가하기</v-btn>
-
-    <v-text-field v-model="addMessage" label="내용"></v-text-field>
+    <v-btn>전송</v-btn>
   </v-container>
 </template>
 
@@ -28,10 +23,11 @@
 export default {
   data() {
     return {
-      messages: [], // 서버에서 가져온 메시지 리스트를 저장
-      content: '',
-      deleteId: '',
-      addMessage: ''
+      notices : [],
+      notice_title: '',
+      notice_content: '',
+      notice_writer:'',
+      notice_time:''
     };
   },
   mounted() {
