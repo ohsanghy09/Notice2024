@@ -12,7 +12,7 @@
                 <p>{{ dayNotice.content }}</p>
               </div>
               <div v-else>
-                <p>공지사항이 없습니다!!</p>
+                <p>공지사항이 없습니다~</p>
               </div>
             </v-card-text>
           </v-card>
