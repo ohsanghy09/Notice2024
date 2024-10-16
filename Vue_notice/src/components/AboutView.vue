@@ -1,9 +1,12 @@
 <template>
   <div>
-    <h1>게시글 작성</h1>
-    <input v-model="title" placeholder="제목" />
-    <textarea v-model="content" placeholder="내용"></textarea>
-    <button @click="submitPost">작성하기</button>
+    <h1>메시지 수정</h1>
+    <input v-model="message" placeholder="메시지를 입력하세요" />
+    <button @click="sendMessage">메시지 보내기</button>
+    <div v-if="updatedMessage">
+      <h3>수정된 메시지:</h3>
+      <p>{{ updatedMessage }}</p>
+    </div>
   </div>
 </template>
 
@@ -13,24 +16,19 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      title: '',
-      content: ''
+      message: '',
+      updatedMessage: '' // 수정된 메시지를 저장할 변수
     };
   },
   methods: {
-    submitPost() {
-      const postData = {
-        title: this.title,
-        content: this.content
-      };
-
-      axios
-        .post('http://localhost:8080/api/posts', postData)
+    sendMessage() {
+      axios.post('http://localhost:8080/api/messages', { message: this.message })
         .then((response) => {
-          console.log('게시글이 성공적으로 전송되었습니다:', response.data);
+          // 서버에서 반환된 수정된 메시지를 저장
+          this.updatedMessage = response.data.message;
         })
         .catch((error) => {
-          console.error('게시글 전송 실패:', error);
+          console.error('메시지 전송 실패:', error);
         });
     }
   }
