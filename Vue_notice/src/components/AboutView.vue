@@ -139,8 +139,8 @@ export default {
     async deleteAll(){
     await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
     this.getNotice();
-  }
   },
+}
 
   
 };

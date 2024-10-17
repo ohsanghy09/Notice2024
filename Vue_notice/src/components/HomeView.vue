@@ -20,7 +20,7 @@
             bottom
             right
             color="red"
-            @click="deleteAllNotices"
+            @click="deleteAll"
             style="margin-right: 70px;" 
           >
             <v-icon color="white">mdi-delete</v-icon>
@@ -108,6 +108,23 @@
         <!-- 투명한 오버레이, 클릭 차단 -->
         <div v-if="isLoading" class="custom-overlay"></div>
 
+        <v-row>
+          <v-col>
+            <v-card class="pa-5" outlined>
+              <v-card-title>가장 최근 등록된 공지사항</v-card-title>
+              <v-card-text>
+                <div v-if="notices[0].id">
+                  <h2>{{ notices[0].title }}</h2>
+                  <p>{{ notices[0].content }}</p>
+                </div>
+                <div v-else>
+                  <p>가장 최근 등록된 공지사항이 없습니다.</p>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
 
         <v-row>
           <v-col>
@@ -119,7 +136,7 @@
                   <v-icon>mdi-pencil</v-icon>
                 </v-btn>
                 <!-- 삭제 버튼 -->
-                <v-btn icon @click="deleteNotice(currentNotice)">
+                <v-btn icon @click="deleteNotice">
                   <v-icon color="red">mdi-delete</v-icon>
                 </v-btn>
               </v-card-title>
@@ -131,7 +148,7 @@
                   <p>{{ select_time }}</p>
                 </div>
                 <div v-else>
-                  <p>공지사항이 없습니다.</p>
+                  <p>현재 선택된 공지사항이 없습니다.</p>
                 </div>
               </v-card-text>
             </v-card>
@@ -209,6 +226,9 @@ export default {
       update_content: '',
       update_writer:'',
       update_time:'',
+
+      // 공지사항 삭제 관련 변수
+      delete_id: '',
 
       
 
@@ -354,11 +374,6 @@ export default {
       this.snackbarMessage = "제목을 입력해주세요."
       return;
     }
-    if (!this.update_writer.trim()){
-      this.snackbar = true;
-      this.snackbarMessage = "작성자를 입력해주세요."
-      return;
-    }
     if (!this.update_content.trim()){
       this.snackbar = true;
       this.snackbarMessage = "내용을 입력해주세요."
@@ -366,9 +381,9 @@ export default {
     }
 
     // 현재 시간 객체 생성
-    this.generateTime();  // 다이얼로그에 공지사항 추가 버튼 클릭 시 현재 시간 객체에 바인딩
+    this.generateTime();  // 다이얼로그에 공지사항 수정 버튼 클릭 시 현재 시간 객체에 바인딩
 
-    // http 통신 데이터 선언(공지사항 등록)
+    // http 통신 데이터 선언(공지사항 수정)
     const updateNotice = {
       id : this.update_id,
       title : this.update_title,
@@ -386,10 +401,10 @@ try{
   }, 3000)
 
 
-  // 공지사항 등록 요청
+  // 공지사항 수정 요청
   await this.$axios.post('http://localhost:8080/api/notice/update', updateNotice);
   
-  // 공지사항 등록 요청이 3초보다 빨리 된다면 타이머 제거
+  // 공지사항 수정 요청이 3초보다 빨리 된다면 타이머 제거
   clearTimeout(this.loadingTimer);
 
   // 만약 3초가 지나 clearTimeout이 무효가 되어 로딩 다이얼로그 표시 상태에서 통신이 성공할 경우 
@@ -417,7 +432,66 @@ catch(error){
 }
 },
     
+//공지사항 삭제 메서드
+async deleteNotice() {
+
+// 삭제할 데이터 아이디 저장
+this.delete_id = this.select_id
+
+// http 통신 데이터 선언(공지사항 삭제)
+const deleteNotice = {
+  id : this.delete_id
+}
+
+try{
+
+// 3초 이상 지연 시 로딩 다이얼로그 출력
+this.loadingTimer = setTimeout(() => {
+this.isLoading = true;
+this.isLoadingMessage = "공지사항 삭제 중.."
+}, 3000)
+
+
+// 공지사항 삭제 요청
+await this.$axios.post('http://localhost:8080/api/notice/delete', deleteNotice);
+
+// 공지사항 삭제 요청이 3초보다 빨리 된다면 타이머 제거
+clearTimeout(this.loadingTimer);
+
+// 만약 3초가 지나 clearTimeout이 무효가 되어 로딩 다이얼로그 표시 상태에서 통신이 성공할 경우 
+this.isLoading = false;
+
+// 성공하면 목록 초기화
+await this.getNotice();
+
+// 추가 안내문구 출력
+this.snackbar = true;
+this.snackbarMessage = "공지사항이 삭제되었습니다.";
+
+// 현재 선택한 공지사항 삭제
+this.select_id = ''
+
+
+// 현재 출력된 다이얼로그 닫기
+this.update_dialog = false;
+}
+
+// 통신에 오류가 발생할 경우
+catch(error){
+this.snackbar = true;
+this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
+}
+},
+
+// 전체 삭제
+async deleteAll(){
+    await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
+    this.getNotice();
+    this.snackbar = true;
+    this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다."
+
   },
+},
 
 
 
