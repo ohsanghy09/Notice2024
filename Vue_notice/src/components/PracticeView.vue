@@ -1,136 +1,33 @@
 <template>
-    <v-container>
-      <div>
-        <h1>공지사항 목록</h1>
-        <ul>
-          <li v-for="notice in notices" :key="notice.id">
-            {{ notice.id }}<br />
-            {{ notice.title }}<br />
-            {{ notice.content }}<br />
-            {{ notice.writer }}<br />
-            {{ notice.time }}<br />
-  
-          </li>
-        </ul>
-      </div>
-  
-      <h1>등록</h1>
-      <v-text-field v-model="add_title" label="제목"></v-text-field>
-      <v-text-field v-model="add_content" label="내용"></v-text-field>
-      <v-text-field v-model="add_writer" label="작성자"></v-text-field>
-      <v-text-field v-model="add_time" label="시간"></v-text-field>
-  
-      <v-btn @click="addNotice">등록</v-btn>
-  
-  
-      <h1>수정</h1>
-      <v-text-field v-model="update_id" label="수정 대상 아이디"></v-text-field>
-      <v-text-field v-model="update_title" label="제목"></v-text-field>
-      <v-text-field v-model="update_content" label="내용"></v-text-field>
-      <v-text-field v-model="update_writer" label="작성자"></v-text-field>
-      <v-text-field v-model="update_time" label="시간"></v-text-field>
-  
-      <v-btn @click="updateNotice">수정</v-btn>
-  
-  
-      <h1>삭제</h1>
-      <v-text-field v-model="delete_id" label="삭제 대상 아이디"></v-text-field>
-  
-      <v-btn @click="deleteNotice">삭제</v-btn>
-  
-    </v-container>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-  
-        // 공지사항 목록 변수
-        notices : [],
-        
-        // 공지사항 등록 관련 변수
-        add_title: '',
-        add_content: '',
-        add_writer:'',
-        add_time:'',
-  
-        // 공지사항 수정 관련 변수
-        update_id: '',
-        update_title: '',
-        update_content: '',
-        update_writer:'',
-        update_time:'',
-  
-        // 공지사항 삭제 관련 변수
-        delete_id : '',
-  
-        // 날짜 관련 함수
-        now_time:null
-  
-      };
-    },
-    mounted() {
-      // 페이지가 로드될 때 서버로부터 메시지 데이터를 가져옵니다.
-      this.getNotice();
-      this.now_time = new Date() // 현재 날짜 객체 생성  
-      this.now_time.setHours(this.now_time.getHours() + 9) // UTC - 협정 세계시에서 9시간을 객체에 추가
-      this.now_time = this.now_time.toISOString().slice(0, 19).replace('T', ' ')  // 새로 설정된 시간을 문자열로 바꾸어 변수에 저장
-      console.log(this.now_time)
-    },
-    methods: {
-  
-      // 공지사항 조회
-      async getNotice() {
-        const response = await this.$axios.get('http://localhost:8080/api/notice/find');
-        this.notices = response.data;
-        console.log(this.notices)
-      },
-  
-  
-      // 공지사항 수정
-      async updateNotice() {
-  
-        const updateNotice = {
-          id : this.update_id,
-          title : this.update_title,
-          content : this.update_content,
-          writer : this.update_writer,
-          time : this. update_time
-        }
-  
-        console.log(updateNotice)
-        await this.$axios.post('http://localhost:8080/api/notice/update', updateNotice);
-        this.getNotice();
-      },
-  
-      // 공지사항 삭제
-      async deleteNotice() {
-        
-        
-        const deleteNotice = {
-          id : this.delete_id
-        }
-  
-        console.log(this.delete_id);
-        await this.$axios.post('http://localhost:8080/api/notice/delete', deleteNotice);
-        this.getNotice();
-      },
-  
-      // 공지사항 추가
-      async addNotice() {
-        const addNotice = {
-          title : this.add_title,
-          content : this.add_content,
-          writer : this.add_writer,
-          time : this.add_time
-        };
-  
-        console.log(addNotice);
-        await this.$axios.post('http://localhost:8080/api/notice/add', addNotice);
-        this.getNotice();
-      },
-    },
-  };
-  </script>
-  
+  <div>
+    <h2>날짜 기준 정렬된 리스트</h2>
+    <ul>
+      <li v-for="(item, index) in sortedDates" :key="index">
+        {{ item.title }} - {{ item.date }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      dates: [
+        { title: "제목1", date: "2024-10-17 11:30:45" },
+        { title: "제목2", date: "2024-10-16 11:30:45" },
+        { title: "제목3", date: "2024-10-11 11:30:45" },
+        { title: "제목4", date: "2024-10-18 11:30:45" },
+        { title: "제목5", date: "2024-10-12 11:30:45" }
+      ]
+    };
+  },
+  computed: {
+    sortedDates() {
+      return [...this.dates].sort((a, b) => { // 얕은 복사로 배열 복사 후 sort 메서드 설정
+        return new Date(a.date) - new Date(b.date); // 문자열의 타입을 Date 객체로 변환하여 계산하면 a-b = -? 일경우 a가 이전 인덱스로 설정됨.
+      });
+    }
+  }
+};
+</script>
