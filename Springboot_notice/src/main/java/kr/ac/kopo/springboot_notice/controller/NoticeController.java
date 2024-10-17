@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/messages")
+@RequestMapping("/api/notice")
 
 public class NoticeController {
 

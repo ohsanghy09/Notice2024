@@ -29,7 +29,8 @@ public class NoticeServiceImpl implements NoticeService{
 
         NoticeEntity message = optionalMessage.get();
         message.setTitle(noticeEntity.getTitle());
-        message.setTitle(noticeEntity.getTitle());
+        message.setContent(noticeEntity.getContent());
+        message.setWriter(noticeEntity.getWriter());
         message.setTime(noticeEntity.getTime());
         return noticeRepository.save(message);  // 수정된 데이터를 저장 후 반환
     }
