@@ -17,4 +17,7 @@ public interface NoticeService {
 
     // 공지사항 내용 추가
     NoticeEntity addNotice(NoticeEntity noticeEntity);
+
+    // 공지사항 내용 전체 삭제
+    void deleteNoticeAll();
 }

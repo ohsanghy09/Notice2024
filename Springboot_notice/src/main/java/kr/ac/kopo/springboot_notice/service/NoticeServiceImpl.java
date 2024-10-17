@@ -60,4 +60,10 @@ public class NoticeServiceImpl implements NoticeService{
     public NoticeEntity addNotice(NoticeEntity noticeEntity) {
         return noticeRepository.save(noticeEntity);  // 데이터베이스에 공지사항 저장
     }
+
+    // 공지사항 전체 삭제
+    @Override
+    public void deleteNoticeAll(){
+        noticeRepository.deleteAll();
+    }
 }

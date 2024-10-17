@@ -23,20 +23,20 @@ public class NoticeController {
 
     // 공지사항 조회
     @GetMapping("find")
-    public List<NoticeEntity> getAllMessages() {
+    public List<NoticeEntity> getAllNotice() {
         return noticeService.getAllNotice();
     }
 
     // 공지사항 수정
     @PostMapping("/update")
-    public ResponseEntity<NoticeEntity> updateMessage(@RequestBody NoticeEntity noticeEntity) {
+    public ResponseEntity<NoticeEntity> updateNotice(@RequestBody NoticeEntity noticeEntity) {
         NoticeEntity updatedMessage = noticeService.updateNotice(noticeEntity);
         return ResponseEntity.ok(updatedMessage);
     }
 
     // 공지사항 삭제
     @PostMapping("/delete")
-    public ResponseEntity<Void> deleteMessageById(@RequestBody Map<String, Long> requestBody) {
+    public ResponseEntity<Void> deleteNoticeById(@RequestBody Map<String, Long> requestBody) {
         Long id = requestBody.get("id");
         noticeService.deleteNoticeById(id);
         return ResponseEntity.ok().build();
@@ -44,9 +44,15 @@ public class NoticeController {
 
     // 공지사항 등록
     @PostMapping("/add")
-    public ResponseEntity<NoticeEntity> addMessage(@RequestBody NoticeEntity noticeEntity) {
+    public ResponseEntity<NoticeEntity> addNotice(@RequestBody NoticeEntity noticeEntity) {
         NoticeEntity savedMessage = noticeService.addNotice(noticeEntity);
         return ResponseEntity.ok(savedMessage);
+    }
+
+    // 공지사항 전체 삭제
+    @DeleteMapping("/deleteAll")
+    public void deleteNoticeAll() {
+        noticeService.deleteNoticeAll();
     }
 
 }

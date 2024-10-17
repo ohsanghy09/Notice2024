@@ -19,7 +19,8 @@ export default {
         { title: "제목3", date: "2024-10-11 11:30:45" },
         { title: "제목4", date: "2024-10-18 11:30:45" },
         { title: "제목5", date: "2024-10-12 11:30:45" }
-      ]
+      ],
+      new_data : []
     };
   },
   computed: {
@@ -28,6 +29,16 @@ export default {
         return new Date(a.date) - new Date(b.date); // 문자열의 타입을 Date 객체로 변환하여 계산하면 a-b = -? 일경우 a가 이전 인덱스로 설정됨.
       });
     }
+  },
+  watch : {
+    sortedDates(newSortedDates){
+      this.new_data = newSortedDates;
+    }
+
+  },
+  created(){
+    this.new_data = this.sortedDates;
+    console.log(this.new_data);
   }
 };
 </script>

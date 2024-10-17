@@ -38,6 +38,10 @@
 
     <v-btn @click="deleteNotice">삭제</v-btn>
 
+    <h1>전체삭제</h1>
+
+    <v-btn @click="deleteAll">전체삭제</v-btn>
+
   </v-container>
 </template>
 
@@ -130,6 +134,14 @@ export default {
       await this.$axios.post('http://localhost:8080/api/notice/add', addNotice);
       this.getNotice();
     },
+
+    // 전체 삭제
+    async deleteAll(){
+    await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
+    this.getNotice();
+  }
   },
+
+  
 };
 </script>
