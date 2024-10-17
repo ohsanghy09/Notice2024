@@ -14,7 +14,7 @@
       </ul>
     </div>
 
-
+    <h1>등록</h1>
     <v-text-field v-model="add_title" label="제목"></v-text-field>
     <v-text-field v-model="add_content" label="내용"></v-text-field>
     <v-text-field v-model="add_writer" label="작성자"></v-text-field>
@@ -23,13 +23,20 @@
     <v-btn @click="addNotice">등록</v-btn>
 
 
-    <v-text-field v-model="update_id" label="아이디"></v-text-field>
+    <h1>수정</h1>
+    <v-text-field v-model="update_id" label="수정 대상 아이디"></v-text-field>
     <v-text-field v-model="update_title" label="제목"></v-text-field>
     <v-text-field v-model="update_content" label="내용"></v-text-field>
     <v-text-field v-model="update_writer" label="작성자"></v-text-field>
     <v-text-field v-model="update_time" label="시간"></v-text-field>
 
     <v-btn @click="updateNotice">수정</v-btn>
+
+
+    <h1>삭제</h1>
+    <v-text-field v-model="delete_id" label="삭제 대상 아이디"></v-text-field>
+
+    <v-btn @click="deleteNotice">삭제</v-btn>
 
   </v-container>
 </template>
@@ -38,6 +45,8 @@
 export default {
   data() {
     return {
+
+      // 공지사항 목록 변수
       notices : [],
       
       // 공지사항 등록 관련 변수
@@ -52,6 +61,10 @@ export default {
       update_content: '',
       update_writer:'',
       update_time:'',
+
+      // 공지사항 삭제 관련 변수
+      delete_id : ''
+
     };
   },
   mounted() {
@@ -59,6 +72,8 @@ export default {
     this.getNotice();
   },
   methods: {
+
+    // 공지사항 조회
     async getNotice() {
       const response = await this.$axios.get('http://localhost:8080/api/notice/find');
       this.notices = response.data;
@@ -82,14 +97,17 @@ export default {
       this.getNotice();
     },
 
-    async DeleteMessage() {
-      const deleteId = {
-        id: this.deleteId,
-      };
+    // 공지사항 삭제
+    async deleteNotice() {
+      
+      
+      const deleteNotice = {
+        id : this.delete_id
+      }
 
-      console.log(deleteId);
-      await this.$axios.post('http://localhost:8080/api/messages/delete', deleteId);
-      this.getMessages();
+      console.log(this.delete_id);
+      await this.$axios.post('http://localhost:8080/api/notice/delete', deleteNotice);
+      this.getNotice();
     },
 
     // 공지사항 추가

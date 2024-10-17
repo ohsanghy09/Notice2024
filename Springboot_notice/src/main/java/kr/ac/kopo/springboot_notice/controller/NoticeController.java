@@ -21,27 +21,31 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+    // 공지사항 조회
     @GetMapping("find")
     public List<NoticeEntity> getAllMessages() {
-        return noticeService.getAllMessages();
+        return noticeService.getAllNotice();
     }
 
+    // 공지사항 수정
     @PostMapping("/update")
     public ResponseEntity<NoticeEntity> updateMessage(@RequestBody NoticeEntity noticeEntity) {
-        NoticeEntity updatedMessage = noticeService.updateMessage(noticeEntity);
+        NoticeEntity updatedMessage = noticeService.updateNotice(noticeEntity);
         return ResponseEntity.ok(updatedMessage);
     }
 
+    // 공지사항 삭제
     @PostMapping("/delete")
     public ResponseEntity<Void> deleteMessageById(@RequestBody Map<String, Long> requestBody) {
         Long id = requestBody.get("id");
-        noticeService.deleteMessageById(id);
+        noticeService.deleteNoticeById(id);
         return ResponseEntity.ok().build();
     }
 
+    // 공지사항 등록
     @PostMapping("/add")
     public ResponseEntity<NoticeEntity> addMessage(@RequestBody NoticeEntity noticeEntity) {
-        NoticeEntity savedMessage = noticeService.addMessage(noticeEntity);
+        NoticeEntity savedMessage = noticeService.addNotice(noticeEntity);
         return ResponseEntity.ok(savedMessage);
     }
 

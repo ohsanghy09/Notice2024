@@ -6,8 +6,15 @@ import java.util.List;
 
 public interface NoticeService {
 
-    List<NoticeEntity> getAllMessages();
-    NoticeEntity updateMessage(NoticeEntity noticeEntity);
-    void deleteMessageById(Long id);
-    NoticeEntity addMessage(NoticeEntity noticeEntity);
+    // 공지사항 내용 조회
+    List<NoticeEntity> getAllNotice();
+
+    // 공지사항 내용 수정
+    NoticeEntity updateNotice(NoticeEntity noticeEntity);
+
+    // 공지사항 내용 삭제
+    void deleteNoticeById(Long id);
+
+    // 공지사항 내용 추가
+    NoticeEntity addNotice(NoticeEntity noticeEntity);
 }
