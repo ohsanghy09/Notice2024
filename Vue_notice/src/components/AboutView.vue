@@ -63,13 +63,20 @@ export default {
       update_time:'',
 
       // 공지사항 삭제 관련 변수
-      delete_id : ''
+      delete_id : '',
+
+      // 날짜 관련 함수
+      now_time:null
 
     };
   },
   mounted() {
     // 페이지가 로드될 때 서버로부터 메시지 데이터를 가져옵니다.
     this.getNotice();
+    this.now_time = new Date() // 현재 날짜 객체 생성  
+    this.now_time.setHours(this.now_time.getHours() + 9) // UTC - 협정 세계시에서 9시간을 객체에 추가
+    this.now_time = this.now_time.toISOString().slice(0, 19).replace('T', ' ')  // 새로 설정된 시간을 문자열로 바꾸어 변수에 저장
+    console.log(this.now_time)
   },
   methods: {
 
