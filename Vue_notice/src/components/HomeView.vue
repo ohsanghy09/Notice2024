@@ -113,9 +113,11 @@
             <v-card class="pa-5" outlined>
               <v-card-title>가장 최근 등록된 공지사항</v-card-title>
               <v-card-text>
-                <div v-if="notices[0].id">
-                  <h2>{{ notices[0].title }}</h2>
-                  <p>{{ notices[0].content }}</p>
+                <div v-if="recent_id">
+                  <h2>{{ recent_title }}</h2>
+                  <p>{{ recent_content }}</p>
+                  <p>{{ recent_writer }}</p>
+                  <p>{{ recent_time }}</p>
                 </div>
                 <div v-else>
                   <p>가장 최근 등록된 공지사항이 없습니다.</p>
@@ -230,6 +232,12 @@ export default {
       // 공지사항 삭제 관련 변수
       delete_id: '',
 
+      // 가장 최근 등록된 공지사항 관련 변수
+      recent_id: '',
+      recent_title: '',
+      recent_writer: '',
+      recent_content: '',
+      recent_time: ''
       
 
       
@@ -334,6 +342,9 @@ export default {
       })
 
       // console.log(this.notices) // 정렬 후 목록 데이터
+
+      // 가장 최근 등록된 공지사항 설정
+      await this.recentNotice();
 
     },
 
@@ -491,6 +502,15 @@ async deleteAll(){
     this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다."
 
   },
+
+  // 가장 최근 등록된 공지사항 관련 메서드
+  async recentNotice(){
+    this.recent_id = this.notices[0].id
+    this.recent_title = this.notices[0].title
+    this.recent_writer = this.notices[0].writer
+    this.recent_content = this.notices[0].content
+    this.recent_time = this.notices[0].time
+  }
 },
 
 
