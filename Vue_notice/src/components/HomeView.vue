@@ -1,7 +1,7 @@
 <template>
   <v-container>
 
-    <!-- 우측 하단 버튼 -->
+    <!-- 우측 하단 공지사항 추가 버튼 -->
     <v-btn
             fab
             fixed
@@ -11,6 +11,19 @@
             @click="addClickBtn"
           >
             <v-icon>mdi-plus</v-icon>
+          </v-btn>
+
+      <!-- 우측 하단 공지사항 삭제 버튼 (빨간색) -->
+      <v-btn
+            fab
+            fixed
+            bottom
+            right
+            color="red"
+            @click="deleteAllNotices"
+            style="margin-right: 70px;" 
+          >
+            <v-icon color="white">mdi-delete</v-icon>
           </v-btn>
 
       <!-- 공지사항 추가 다이얼로그 -->
@@ -34,11 +47,40 @@
               label="내용"
             ></v-textarea>
           </v-card-text>
-  
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="add_dialog = false">취소</v-btn>
             <v-btn color="blue darken-1" text @click="addNotice">추가</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- 공지사항 수정 다이얼로그 -->
+      <v-dialog v-model="update_dialog" max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">공지사항 수정</span>
+          </v-card-title>
+  
+          <v-card-text>
+            <v-text-field
+              v-model="update_title"
+              label="제목"
+            ></v-text-field>
+            <v-text-field
+              readonly
+              v-model="update_writer"
+              label="작성자"
+            ></v-text-field>
+            <v-textarea
+              v-model="update_content"
+              label="내용"
+            ></v-textarea>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="update_dialog = false">취소</v-btn>
+            <v-btn color="blue darken-1" text @click="updateNotice">수정</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -65,6 +107,57 @@
                   </v-dialog>
         <!-- 투명한 오버레이, 클릭 차단 -->
         <div v-if="isLoading" class="custom-overlay"></div>
+
+
+        <v-row>
+          <v-col>
+            <v-card class="pa-5" outlined>
+              <v-card-title>
+                현재 선택된 공지사항
+                <!-- 수정 버튼 -->
+                <v-btn icon @click="updateClickBtn">
+                  <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                <!-- 삭제 버튼 -->
+                <v-btn icon @click="deleteNotice(currentNotice)">
+                  <v-icon color="red">mdi-delete</v-icon>
+                </v-btn>
+              </v-card-title>
+              <v-card-text>
+                <div v-if="select_id">
+                  <h2>{{ select_title }}</h2>
+                  <p>{{ select_content }}</p>
+                  <p>{{ select_writer }}</p>
+                  <p>{{ select_time }}</p>
+                </div>
+                <div v-else>
+                  <p>공지사항이 없습니다.</p>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+
+
+         <!-- 이전 공지사항 목록 표시 -->
+         <v-row class="mt-5">
+          <v-col>
+            <v-card outlined>
+              <v-card-title>이전 공지사항 목록</v-card-title>
+              <v-list>
+                <v-list-item
+                  v-for="notice in notices"
+                  :key="notice.time"
+                  @click="selectNotice(notice)"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>{{ notice.title }} {{ notice.writer }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-card>
+          </v-col>
+        </v-row>
 
       
 
@@ -96,6 +189,29 @@ export default {
       add_content: '',
       add_writer:'',
       add_time:'',
+
+      // 공지사항 목록 변수
+      notices : [],
+
+      // 공지사항 선택 관련 변수
+      select_id: '',
+      select_title: '',
+      select_content: '',
+      select_writer:'',
+      select_time:'',
+
+      // 공지사항 수정 다이얼로그 변수
+      update_dialog: false,
+
+      // 공지사항 수정 관련 변수
+      update_id: '',
+      update_title: '',
+      update_content: '',
+      update_writer:'',
+      update_time:'',
+
+      
+
       
     }
   },
@@ -167,6 +283,9 @@ export default {
         // 만약 3초가 지나 clearTimeout이 무효가 되어 로딩 다이얼로그 표시 상태에서 통신이 성공할 경우 
         this.isLoading = false;
 
+        // 성공하면 목록 초기화
+        this.getNotice();
+
         // 추가 안내문구 출력
         this.snackbar = true;
         this.snackbarMessage = "공지사항이 추가되었습니다.";
@@ -180,9 +299,151 @@ export default {
         this.snackbar = true;
         this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
       }
-      
-      
     },
+
+    // 공지사항 조회
+    async getNotice() {
+      const response = await this.$axios.get('http://localhost:8080/api/notice/find');
+      this.notices = response.data; // http 통신으로 받은 데이터를 공지사항 배열 변수에 저장
+      
+      // console.log(this.notices) // 정렬 전 목록 데이터
+
+      // 배열 변수에 내용을 날짜 기준으로 정렬하여 저장
+      this.notices.sort((a, b) =>{
+        return new Date(b.time) - new Date(a.time);
+      })
+
+      // console.log(this.notices) // 정렬 후 목록 데이터
+
+    },
+
+    // 이전 공지사항 목록 클릭시 동작하는 메서드(현재 선택된 공지사항으로 적용)
+    selectNotice(notice){
+      this.select_id = notice.id;
+      this.select_title = notice.title;
+      this.select_writer = notice.writer;
+      this.select_content = notice.content;
+      this.select_time = notice.time;
+    },
+
+    // 수정 버튼을 클릭하면 나타나는 메서드(수정 다이얼로그 출력)
+    updateClickBtn(){
+      if(!this.select_id){
+        this.snackbar = true;
+        this.snackbarMessage = "이전 공지사항 목록에서 수정할 공지사항을 선택해주세요."
+        return;
+      }
+      
+      // 수정 다이얼로그 열기
+      this.update_dialog = true;
+
+      // 수정 다이얼로그 텍스트에 현재 선택한 데이터 저장
+      this.update_id = this.select_id;
+      this.update_title = this.select_title;
+      this.update_writer = this.select_writer;
+      this.update_content = this.select_content;
+      this.update_time = this.select_time;
+    },
+
+    //공지사항 수정 메서드
+    async updateNotice() {
+
+    // 입력 조건(공백 제거)
+    if (!this.update_title.trim()){
+      this.snackbar = true;
+      this.snackbarMessage = "제목을 입력해주세요."
+      return;
+    }
+    if (!this.update_writer.trim()){
+      this.snackbar = true;
+      this.snackbarMessage = "작성자를 입력해주세요."
+      return;
+    }
+    if (!this.update_content.trim()){
+      this.snackbar = true;
+      this.snackbarMessage = "내용을 입력해주세요."
+      return;
+    }
+
+    // 현재 시간 객체 생성
+    this.generateTime();  // 다이얼로그에 공지사항 추가 버튼 클릭 시 현재 시간 객체에 바인딩
+
+    // http 통신 데이터 선언(공지사항 등록)
+    const updateNotice = {
+      id : this.update_id,
+      title : this.update_title,
+      content : this.update_content,
+      time : this.now_time
+    };
+
+
+try{
+
+  // 3초 이상 지연 시 로딩 다이얼로그 출력
+  this.loadingTimer = setTimeout(() => {
+    this.isLoading = true;
+    this.isLoadingMessage = "공지사항 수정 중.."
+  }, 3000)
+
+
+  // 공지사항 등록 요청
+  await this.$axios.post('http://localhost:8080/api/notice/update', updateNotice);
+  
+  // 공지사항 등록 요청이 3초보다 빨리 된다면 타이머 제거
+  clearTimeout(this.loadingTimer);
+
+  // 만약 3초가 지나 clearTimeout이 무효가 되어 로딩 다이얼로그 표시 상태에서 통신이 성공할 경우 
+  this.isLoading = false;
+
+  // 성공하면 목록 초기화
+  await this.getNotice();
+
+  // 추가 안내문구 출력
+  this.snackbar = true;
+  this.snackbarMessage = "공지사항이 수정되었습니다.";
+
+  // 현재 선택한 공지사항으로 데이터 저장
+  this.selectNotice(this.notices[0])
+
+
+  // 현재 출력된 다이얼로그 닫기
+  this.update_dialog = false;
+}
+
+// 통신에 오류가 발생할 경우
+catch(error){
+  this.snackbar = true;
+  this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
+}
+},
+    
+  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // 페이지 생성 후 동작하는 라이프 사이클
+  created(){
+    this.getNotice(); // 공지사항 조회하는 메서드
   }
 }
 

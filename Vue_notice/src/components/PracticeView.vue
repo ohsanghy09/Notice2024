@@ -1,12 +1,17 @@
 <template>
+  <v-container>
   <div>
     <h2>날짜 기준 정렬된 리스트</h2>
     <ul>
-      <li v-for="(item, index) in sortedDates" :key="index">
+      <li v-for="(item, index) in dates" :key="index">
         {{ item.title }} - {{ item.date }}
       </li>
     </ul>
   </div>
+
+  <v-btn @click="Sorted">정렬</v-btn>
+</v-container>
+
 </template>
 
 <script>
@@ -23,22 +28,17 @@ export default {
       new_data : []
     };
   },
-  computed: {
-    sortedDates() {
-      return [...this.dates].sort((a, b) => { // 얕은 복사로 배열 복사 후 sort 메서드 설정
-        return new Date(a.date) - new Date(b.date); // 문자열의 타입을 Date 객체로 변환하여 계산하면 a-b = -? 일경우 a가 이전 인덱스로 설정됨.
-      });
-    }
-  },
-  watch : {
-    sortedDates(newSortedDates){
-      this.new_data = newSortedDates;
-    }
 
+  methods : {
+    Sorted(){
+      this.dates.sort((a, b) =>{
+        return new Date(a.date) - new Date(b.date);
+      })
+      console.log(this.dates)
+    }
   },
   created(){
-    this.new_data = this.sortedDates;
-    console.log(this.new_data);
+    // this.Sorted();
   }
 };
 </script>

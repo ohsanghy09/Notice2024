@@ -37,7 +37,6 @@ public class NoticeServiceImpl implements NoticeService{
         NoticeEntity notice = optionalNotice.get();   // 수정하여 데이터베이스에 저장할 entity에 기존 데이터베이스에 있는 데이터를 선언 -> get
         notice.setTitle(noticeEntity.getTitle());   // 외부에서 받은 제목을 데이터베이스에 저장하기 위한 entity에 저장(변경)
         notice.setContent(noticeEntity.getContent()); // 외부에서 받은 내용을 데이터베이스에 저장하기 위한 entity에 저장(변경)
-        notice.setWriter(noticeEntity.getWriter()); // 외부에서 받은 작성자를 데이터베이스에 저장하기 위한 entity에 저장(변경)
         notice.setTime(noticeEntity.getTime()); // 외부에서 받은 시간을 데이터베이스에 저장하기 위한 entity에 저장(변경)
         return noticeRepository.save(notice);  // 수정된 데이터를 저장 후 반환
     }
