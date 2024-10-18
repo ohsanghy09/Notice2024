@@ -170,7 +170,7 @@
                   @click="selectNotice(notice)"
                 >
                   <v-list-item-content>
-                    <v-list-item-title>{{ notice.title }} {{ notice.writer }}</v-list-item-title>
+                    <v-list-item-title><h3>{{ notice.title }}</h3> <p>{{ notice.writer }}</p></v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -331,6 +331,7 @@ export default {
 
     // 공지사항 조회
     async getNotice() {
+      try{
       const response = await this.$axios.get('http://localhost:8080/api/notice/find');
       this.notices = response.data; // http 통신으로 받은 데이터를 공지사항 배열 변수에 저장
       
@@ -345,6 +346,14 @@ export default {
 
       // 가장 최근 등록된 공지사항 설정
       await this.recentNotice();
+
+
+      }catch(error){
+        this.snackbar = true;
+        this.snackbarMessage = "현재 공지사항 목록이 존재하지 않습니다. 공지사항을 추가해주세요.";
+        return;
+      }
+      
 
     },
 
@@ -449,6 +458,13 @@ async deleteNotice() {
 // 삭제할 데이터 아이디 저장
 this.delete_id = this.select_id
 
+// 현재 선택한 공지사항이 없이 삭제하려는 경우
+if(!this.delete_id){
+  this.snackbar = true;
+  this.snackbarMessage = "이전 공지사항 목록에서 삭제할 공지사항을 선택해주세요.";
+  return;
+}
+
 // http 통신 데이터 선언(공지사항 삭제)
 const deleteNotice = {
   id : this.delete_id
@@ -502,7 +518,6 @@ async deleteAll(){
     this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다."
 
   },
-
   // 가장 최근 등록된 공지사항 관련 메서드
   async recentNotice(){
     this.recent_id = this.notices[0].id
@@ -511,6 +526,7 @@ async deleteAll(){
     this.recent_content = this.notices[0].content
     this.recent_time = this.notices[0].time
   }
+
 },
 
 
