@@ -151,6 +151,39 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
+    <v-row justify="center" align="center">
+      <v-btn
+        v-for="n in currentButtons"
+        :key="n"
+        @click="getByNotice(n)"
+        class="photo-button"
+        color="primary"
+      >
+        {{ n }}
+      </v-btn>
+    </v-row>
+
+    <v-row justify="center" align="center">
+      <!-- 이전 페이지로 이동 -->
+      <v-btn
+        :disabled="current_button_Page === 1"
+        @click="prevPage"
+        class="nav-btn"
+      >
+        이전
+      </v-btn>
+
+      <!-- 다음 페이지로 이동 -->
+      <v-btn
+        :disabled="current_button_Page === totalButtonPages"
+        @click="nextPage"
+        class="nav-btn"
+      >
+        다음
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 
@@ -207,9 +240,13 @@ export default {
       recent_title: '',
       recent_writer: '',
       recent_content: '',
-      recent_time: ''
+      recent_time: '',
       
 
+      all_count_data : null, // 전체 데이터 개수
+      current_button_Page: 1, // 현재 버튼 페이지
+      set_button_page : 2, // 현재 버튼페이지에 나타낼 버튼 개수
+      totalButton: null, // 전체 버튼 개수
       
     }
   },
@@ -302,17 +339,8 @@ export default {
     // 공지사항 조회
     async getNotice() {
       try{
-      const response = await this.$axios.get('http://localhost:8080/api/notice/find');
-      this.notices = response.data; // http 통신으로 받은 데이터를 공지사항 배열 변수에 저장
-      
-      // console.log(this.notices) // 정렬 전 목록 데이터
 
-      // 배열 변수에 내용을 날짜 기준으로 정렬하여 저장
-      this.notices.sort((a, b) =>{
-        return new Date(b.time) - new Date(a.time);
-      })
-
-      // console.log(this.notices) // 정렬 후 목록 데이터
+      await this.getByNotice(1)
 
       // 가장 최근 등록된 공지사항 설정
       await this.recentNotice();
@@ -523,7 +551,35 @@ async deleteAll(){
       this.select_time = '';
     }
       
-    }
+    },
+
+
+    // 이전 페이지로 이동
+    prevPage() {
+      if (this.current_button_Page > 1) {
+        this.current_button_Page--;
+      }
+    },
+    // 다음 페이지로 이동
+    nextPage() {
+      if (this.current_button_Page < this.totalButton) {
+        this.current_button_Page++;
+      }
+    },
+    // 버튼 클릭 처리
+    async getByNotice(n) {
+      console.log(`${n}번 버튼을 클릭했습니다.`);
+      const start = (n - 1) * 10 + 1
+      const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
+      this.notices = response.data
+    },
+
+
+    // 총 버튼 개수
+    async countNotice(){
+      const response = await this.$axios.get("http://localhost:8080/api/notice/count")
+      this.totalButton = Math.ceil(response.data / 10)
+    },
 
 },
 
@@ -552,7 +608,21 @@ async deleteAll(){
   // 페이지 생성 후 동작하는 라이프 사이클
   created(){
     this.getNotice(); // 공지사항 조회하는 메서드
-  }
+  },
+  mounted(){
+    this.countNotice();
+  },
+  computed: {
+    // 현재 페이지에 표시할 버튼들 계산
+    currentButtons() {
+      const start = (this.current_button_Page - 1) * this.set_button_page + 1;
+      return Array.from({ length: this.set_button_page }, (_, i) => start + i).filter(n => n <= this.totalButton);
+    },
+    // 총 페이지 수 계산
+    totalButtonPages() {
+      return Math.ceil(this.totalButton / this.set_button_page);
+    }
+  },
 }
 
 
@@ -560,7 +630,6 @@ async deleteAll(){
 
 <style scoped>
 .v-btn {
-  border-radius: 50%;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -600,5 +669,20 @@ async deleteAll(){
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9999;
+}.photo-buttons {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.photo-button {
+  margin: 5px;
+}
+
+.pagination-controls {
+  margin-top: 20px;
+}
+
+.nav-btn {
+  margin: 5px;
 }
 </style>

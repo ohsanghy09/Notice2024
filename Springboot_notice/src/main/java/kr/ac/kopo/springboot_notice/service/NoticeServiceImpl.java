@@ -65,4 +65,14 @@ public class NoticeServiceImpl implements NoticeService{
     public void deleteNoticeAll(){
         noticeRepository.deleteAll();
     }
+
+    @Override
+    public long getNoticeCount(){
+        return noticeRepository.countNotice();
+    }
+
+    @Override
+    public List<NoticeEntity> getNoticesByDate(int start){
+        return noticeRepository.findNoticesByDate(start);
+    }
 }

@@ -1,9 +1,9 @@
 // src/router/index.js
 import Vue from 'vue';
 import Router from 'vue-router';
-import Home from '@/components/HomeView.vue';
+import Notice from '@/components/NoticeNavigationView.vue';
 import About from '@/components/AboutView.vue';
-import Prac from '@/components/PracticeView.vue'
+import Main from '@/components/MainView.vue'
 
 Vue.use(Router);
 
@@ -12,18 +12,18 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      name: 'Main',
+      component: Main
+    },
+    {
+      path: '/Notice',
+      name: 'Notice',
+      component: Notice
     },
     {
       path: '/about',
-      name: 'About',
+      name: 'about',
       component: About
-    },
-    {
-      path: '/practice',
-      name: 'practice',
-      component: Prac
     }
   ]
 });

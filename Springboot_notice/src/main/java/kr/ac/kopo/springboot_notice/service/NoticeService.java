@@ -20,4 +20,10 @@ public interface NoticeService {
 
     // 공지사항 내용 전체 삭제
     void deleteNoticeAll();
+
+    // 전체 데이터 개수 조회
+    long getNoticeCount();
+
+    // 시작 번호를 토대로 10개의 데이터 조회
+    List<NoticeEntity> getNoticesByDate(int start);
 }

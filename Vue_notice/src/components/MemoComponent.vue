@@ -1,224 +1,153 @@
 <template>
-    <v-app>
-      <!-- 상단에 큰 공지사항 표시하는 부분 -->
-      <v-container>
-        <v-row>
-          <v-col>
-            <v-card class="pa-5" outlined>
-              <v-card-title>가장 최근 등록된 공지사항</v-card-title>
-              <v-card-text>
-                <div v-if="dayNotice">
-                  <h2>{{ dayNotice.title }}</h2>
-                  <p>{{ dayNotice.content }}</p>
-                </div>
-                <div v-else>
-                  <p>공지사항이 없습니다~</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-  
-        <v-row>
-          <v-col>
-            <v-card class="pa-5" outlined>
-              <v-card-title>
-                현재 선택된 공지사항
-                <!-- 수정 버튼 -->
-                <v-btn icon @click="openEditDialog(currentNotice)">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <!-- 삭제 버튼 -->
-                <v-btn icon @click="deleteNotice(currentNotice)">
-                  <v-icon color="red">mdi-delete</v-icon>
-                </v-btn>
-              </v-card-title>
-              <v-card-text>
-                <div v-if="currentNotice">
-                  <h2>{{ currentNotice.title }}</h2>
-                  <p>{{ currentNotice.content }}</p>
-                </div>
-                <div v-else>
-                  <p>공지사항이 없습니다.</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-        
-        <!-- 이전 공지사항 목록 표시 -->
-        <v-row class="mt-5">
-          <v-col>
-            <v-card outlined>
-              <v-card-title>이전 공지사항 목록</v-card-title>
-              <v-list>
-                <v-list-item
-                  v-for="(notice, index) in notices"
-                  :key="index"
-                  @click="selectNotice(notice)"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>{{ notice.title }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-  
-      <!-- 우측 하단 버튼 -->
+  <v-app>
+    <v-container class="text-center">
+      <v-row justify="center">
+        <!-- 이미지 표시 -->
+        <v-col cols="12">
+          <v-img :src="currentImage" max-width="500" max-height="400" alt="Scenic Image"></v-img>
+        </v-col>
+      </v-row>
+
+      <v-row justify="center" class="mt-5">
+        <!-- 다음 이미지로 전환하는 버튼 -->
+        <v-col cols="auto">
+          <v-btn color="primary" @click="changeImage">다음 사진</v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      // 이미지 배열
+      images: [
+        'https://via.placeholder.com/500x400.png?text=Image+1',
+        'https://via.placeholder.com/500x400.png?text=Image+2',
+        'https://via.placeholder.com/500x400.png?text=Image+3'
+      ],
+      currentIndex: 0 // 현재 이미지 인덱스
+    };
+  },
+  computed: {
+    // 현재 표시할 이미지
+    currentImage() {
+      return this.images[this.currentIndex];
+    }
+  },
+  methods: {
+    // 버튼을 클릭하면 다음 이미지로 변경
+    changeImage() {
+      this.currentIndex = (this.currentIndex + 1) % this.images.length;
+    }
+  }
+};
+</script>
+
+<style scoped>
+v-img {
+  margin: auto;
+}
+</style>
+
+<!-- <template>
+  <div class="photo-buttons">
+    <h1>사진 목록</h1>
+
+    <div>
       <v-btn
-        fab
-        fixed
-        bottom
-        right
+        v-for="n in currentButtons"
+        :key="n"
+        @click="handleClick(n)"
+        class="photo-button"
         color="primary"
-        @click="dialog = true"
       >
-        <v-icon>mdi-plus</v-icon>
+        {{ n }}
       </v-btn>
-  
-      <!-- 공지사항 추가 다이얼로그 -->
-      <v-dialog v-model="dialog" max-width="500px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">공지사항 추가</span>
-          </v-card-title>
-  
-          <v-card-text>
-            <v-text-field
-              v-model="newNotice.title"
-              label="제목"
-            ></v-text-field>
-            <v-textarea
-              v-model="newNotice.content"
-              label="내용"
-            ></v-textarea>
-          </v-card-text>
-  
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialog = false">취소</v-btn>
-            <v-btn color="blue darken-1" text @click="addNotice">추가</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-  
-      <!-- 공지사항 수정 다이얼로그 -->
-      <v-dialog v-model="editDialog" max-width="500px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">공지사항 수정</span>
-          </v-card-title>
-  
-          <v-card-text>
-            <v-text-field
-              v-model="editNotice.title"
-              label="제목"
-            ></v-text-field>
-            <v-textarea
-              v-model="editNotice.content"
-              label="내용"
-            ></v-textarea>
-          </v-card-text>
-  
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="editDialog = false">취소</v-btn>
-            <v-btn color="blue darken-1" text @click="saveEdit">저장</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-app>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        dialog: false, // 다이얼로그 열림 여부 (추가)
-        editDialog: false, // 다이얼로그 열림 여부 (수정)
-        currentNotice: null, // 현재 선택된 공지사항
-        newNotice: {
-          title: '',
-          content: '',
-        }, // 새 공지사항 추가를 위한 데이터
-        editNotice: {
-          title: '',
-          content: '',
-        }, // 수정 공지사항을 위한 데이터
-        notices: [
-          { title: '첫 번째 공지사항', content: '첫 번째 공지사항 내용' },
-          { title: '두 번째 공지사항', content: '두 번째 공지사항 내용' },
-        ], // 기존 공지사항 목록
-        dayNotice: {
-          title: '',
-          content: '',
-        },
-      };
+    </div>
+
+    <div class="pagination-controls">
+      <v-btn
+        :disabled="currentPage === 1"
+        @click="prevPage"
+        class="nav-btn"
+      >
+        이전
+      </v-btn>
+
+      <v-btn
+        :disabled="currentPage === totalPages"
+        @click="nextPage"
+        class="nav-btn"
+      >
+        다음
+      </v-btn>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      totalButtons: 35, // 버튼의 총 개수
+      buttonsPerPage: 10, // 한 페이지에 표시할 버튼 수
+      currentPage: 1 // 현재 페이지
+    };
+  },
+  computed: {
+    // 현재 페이지에 표시할 버튼들 계산
+    currentButtons() {
+      const start = (this.currentPage - 1) * this.buttonsPerPage + 1;
+      // const end = this.currentPage * this.buttonsPerPage;
+      return Array.from({ length: this.buttonsPerPage }, (_, i) => start + i).filter(n => n <= this.totalButtons);
     },
-    mounted() {
-      // 페이지가 로드되면 가장 최근 공지사항을 표시
-      if (this.notices.length > 0) {
-        this.currentNotice = this.notices[this.notices.length - 1];
+    // 총 페이지 수 계산
+    totalPages() {
+      return Math.ceil(this.totalButtons / this.buttonsPerPage);
+    }
+  },
+  methods: {
+    // 이전 페이지로 이동
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
       }
     },
-    methods: {
-      addNotice() {
-        // 공지사항을 추가하고 다이얼로그를 닫음
-        if (this.newNotice.title && this.newNotice.content) {
-          const newAddedNotice = { ...this.newNotice };
-          this.notices.push(newAddedNotice);
-          this.dayNotice = newAddedNotice;
-          this.newNotice.title = '';
-          this.newNotice.content = '';
-          this.dialog = false;
-        }
-      },
-      selectNotice(notice) {
-        // 공지사항 선택 시 현재 공지사항 업데이트
-        this.currentNotice = notice;
-      },
-      openEditDialog(notice) {
-        // 수정 다이얼로그 열고 선택된 공지사항 데이터를 편집용으로 설정
-        this.editNotice = { ...notice };
-        this.editDialog = true;
-      },
-      saveEdit() {
-        // 수정 내용을 저장
-        if (this.editNotice.title && this.editNotice.content) {
-          const index = this.notices.findIndex(n => n === this.currentNotice);
-          if (index !== -1) {
-            this.notices.splice(index, 1, { ...this.editNotice });
-            this.currentNotice = this.editNotice;
-            this.dayNotice = this.editNotice;
-          }
-          this.editDialog = false;
-        }
-      },
-      deleteNotice(notice) {
-        // 공지사항 삭제
-        const index = this.notices.indexOf(notice);
-        if (index !== -1) {
-          this.notices.splice(index, 1);
-  
-          // 현재 공지사항 삭제 시 다음 공지사항을 선택하거나 없을 경우 null 설정
-          if (this.currentNotice === notice) {
-            this.currentNotice = this.notices[this.notices.length - 1] || null;
-          }
-  
-          // 최근 공지사항도 갱신
-          this.dayNotice = this.notices[this.notices.length - 1] || null;
-        }
-      },
+    // 다음 페이지로 이동
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
     },
-  };
-  </script>
-  
-  <style>
-  body {
-    font-family: "Roboto", sans-serif;
+    // 버튼 클릭 처리
+    async handleClick(n) {
+      console.log(`${n}번 버튼을 클릭했습니다.`);
+      const response = await this.$axios.get("http://localhost:8080/api/notice/count")
+      console.log(response.data)
+    }
   }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+.photo-buttons {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.photo-button {
+  margin: 5px;
+}
+
+.pagination-controls {
+  margin-top: 20px;
+}
+
+.nav-btn {
+  margin: 5px;
+}
+</style> -->
+
