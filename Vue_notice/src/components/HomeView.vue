@@ -495,6 +495,9 @@ await this.getNotice();
 this.snackbar = true;
 this.snackbarMessage = "공지사항이 삭제되었습니다.";
 
+// 공지사항 목록이 삭제로 인해 없어질 경우 공지사항 게시판 초기화
+await this.resetRecentNotice();
+
 // 현재 선택한 공지사항 삭제
 this.select_id = ''
 
@@ -513,9 +516,13 @@ this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시
 // 전체 삭제
 async deleteAll(){
     await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
-    this.getNotice();
+    await this.getNotice();
     this.snackbar = true;
-    this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다."
+    this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다.";
+
+    // 공지사항 목록이 삭제로 인해 없어질 경우 공지사항 게시판 초기화
+    await this.resetRecentNotice();
+
 
   },
   // 가장 최근 등록된 공지사항 관련 메서드
@@ -525,7 +532,28 @@ async deleteAll(){
     this.recent_writer = this.notices[0].writer
     this.recent_content = this.notices[0].content
     this.recent_time = this.notices[0].time
-  }
+  },
+
+  // 가장 최근 등록된 공지사항 초기화 메서드
+  async resetRecentNotice() {
+
+    if(this.notices.length === 0){
+      // 가장 최근 등록된 공지사항 초기화
+      this.recent_id = '';
+      this.recent_title = '';
+      this.recent_writer = '';
+      this.recent_content = '';
+      this.recent_time = '';
+
+      // 현재 선택된 공지사항 초기화
+      this.select_id = '';
+      this.select_title = '';
+      this.select_writer = '';
+      this.select_content = '';
+      this.select_time = '';
+    }
+      
+    }
 
 },
 
@@ -559,3 +587,19 @@ async deleteAll(){
 
 
 </script>
+
+<style>
+.custom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+}
+
+.v-card {
+  border-radius: 12px;
+}
+</style>
