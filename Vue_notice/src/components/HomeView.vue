@@ -3,185 +3,155 @@
 
     <!-- 우측 하단 공지사항 추가 버튼 -->
     <v-btn
-            fab
-            fixed
-            bottom
-            right
-            color="primary"
-            @click="addClickBtn"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
+      fab
+      fixed
+      bottom
+      right
+      color="primary"
+      @click="addClickBtn"
+    >
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
 
-      <!-- 우측 하단 공지사항 삭제 버튼 (빨간색) -->
-      <v-btn
-            fab
-            fixed
-            bottom
-            right
-            color="red"
-            @click="deleteAll"
-            style="margin-right: 70px;" 
-          >
-            <v-icon color="white">mdi-delete</v-icon>
-          </v-btn>
+    <!-- 우측 하단 공지사항 삭제 버튼 (빨간색) -->
+    <v-btn
+      fab
+      fixed
+      bottom
+      right
+      color="red"
+      @click="deleteAll"
+      style="margin-right: 70px;"
+    >
+      <v-icon color="white">mdi-delete</v-icon>
+    </v-btn>
 
-      <!-- 공지사항 추가 다이얼로그 -->
-      <v-dialog v-model="add_dialog" max-width="500px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">공지사항 추가</span>
-          </v-card-title>
-  
+    <!-- 공지사항 추가 다이얼로그 -->
+    <v-dialog v-model="add_dialog" max-width="500px">
+      <v-card>
+        <v-card-title class="headline primary--text">공지사항 추가</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="add_title" label="제목" outlined></v-text-field>
+          <v-text-field v-model="add_writer" label="작성자" outlined></v-text-field>
+          <v-textarea v-model="add_content" label="내용" outlined></v-textarea>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey" text @click="add_dialog = false">취소</v-btn>
+          <v-btn color="primary" @click="addNotice">추가</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- 공지사항 수정 다이얼로그 -->
+    <v-dialog v-model="update_dialog" max-width="500px">
+      <v-card>
+        <v-card-title class="headline primary--text">공지사항 수정</v-card-title>
+        <v-card-text>
+          <v-text-field v-model="update_title" label="제목" outlined></v-text-field>
+          <v-text-field readonly v-model="update_writer" label="작성자" outlined></v-text-field>
+          <v-textarea v-model="update_content" label="내용" outlined></v-textarea>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="grey" text @click="update_dialog = false">취소</v-btn>
+          <v-btn color="primary" @click="updateNotice">수정</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- 스낵바: 알림 메시지 표시 -->
+    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+      {{ snackbarMessage }}
+    </v-snackbar>
+
+    <!-- 로딩 다이얼로그 -->
+    <v-dialog v-model="isLoading" persistent hide-overlay width="300">
+      <v-card color="#FFC107" dark>
+        <v-card-text>
+          <div class="text-center">
+            <h3>{{ isLoadingMessage }}</h3>
+          </div>
+          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
+    <!-- 투명한 오버레이, 클릭 차단 -->
+    <div v-if="isLoading" class="custom-overlay"></div>
+
+    <!-- 가장 최근 등록된 공지사항 -->
+    <v-row>
+      <v-col>
+        <v-card class="pa-5 notice-card" outlined>
+          <v-card-title class="primary--text">가장 최근 등록된 공지사항</v-card-title>
           <v-card-text>
-            <v-text-field
-              v-model="add_title"
-              label="제목"
-            ></v-text-field>
-            <v-text-field
-              v-model="add_writer"
-              label="작성자"
-            ></v-text-field>
-            <v-textarea
-              v-model="add_content"
-              label="내용"
-            ></v-textarea>
+            <div v-if="recent_id">
+              <h2 class="title">{{ recent_title }}</h2>
+              <p>{{ recent_content }}</p>
+              <p class="writer">작성자: {{ recent_writer }}</p>
+              <p class="time">작성 시간: {{ recent_time }}</p>
+            </div>
+            <div v-else>
+              <p>가장 최근 등록된 공지사항이 없습니다.</p>
+            </div>
           </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="add_dialog = false">취소</v-btn>
-            <v-btn color="blue darken-1" text @click="addNotice">추가</v-btn>
-          </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-col>
+    </v-row>
 
-      <!-- 공지사항 수정 다이얼로그 -->
-      <v-dialog v-model="update_dialog" max-width="500px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">공지사항 수정</span>
+    <!-- 현재 선택된 공지사항 -->
+    <v-row>
+      <v-col>
+        <v-card class="pa-5 notice-card" outlined>
+          <v-card-title class="primary--text">
+            현재 선택된 공지사항
+            <!-- 수정 버튼 -->
+            <v-btn icon @click="updateClickBtn">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <!-- 삭제 버튼 -->
+            <v-btn icon @click="deleteNotice">
+              <v-icon color="red">mdi-delete</v-icon>
+            </v-btn>
           </v-card-title>
-  
           <v-card-text>
-            <v-text-field
-              v-model="update_title"
-              label="제목"
-            ></v-text-field>
-            <v-text-field
-              readonly
-              v-model="update_writer"
-              label="작성자"
-            ></v-text-field>
-            <v-textarea
-              v-model="update_content"
-              label="내용"
-            ></v-textarea>
+            <div v-if="select_id">
+              <h2 class="title">{{ select_title }}</h2>
+              <p>{{ select_content }}</p>
+              <p class="writer">작성자: {{ select_writer }}</p>
+              <p class="time">작성 시간: {{ select_time }}</p>
+            </div>
+            <div v-else>
+              <p>현재 선택된 공지사항이 없습니다.</p>
+            </div>
           </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="update_dialog = false">취소</v-btn>
-            <v-btn color="blue darken-1" text @click="updateNotice">수정</v-btn>
-          </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-col>
+    </v-row>
 
-      <!-- 스낵바: 알림 메시지 표시 -->
-      <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
-              {{ snackbarMessage }}
-      </v-snackbar>
-
-       <!-- 로딩 다이얼로그 -->
-      <v-dialog v-model="isLoading" persistent hide-overlay width="300">
-                    <v-card color="#FFC107" dark>
-                      <v-card-text>
-                        <div class="text-center">
-                          <h3>{{ isLoadingMessage }}</h3>
-                        </div>
-                        <v-progress-linear
-                          indeterminate
-                          color="white"
-                          class="mb-0"
-                        ></v-progress-linear>
-                      </v-card-text>
-                    </v-card>
-                  </v-dialog>
-        <!-- 투명한 오버레이, 클릭 차단 -->
-        <div v-if="isLoading" class="custom-overlay"></div>
-
-        <v-row>
-          <v-col>
-            <v-card class="pa-5" outlined>
-              <v-card-title>가장 최근 등록된 공지사항</v-card-title>
-              <v-card-text>
-                <div v-if="recent_id">
-                  <h2>{{ recent_title }}</h2>
-                  <p>{{ recent_content }}</p>
-                  <p>{{ recent_writer }}</p>
-                  <p>{{ recent_time }}</p>
-                </div>
-                <div v-else>
-                  <p>가장 최근 등록된 공지사항이 없습니다.</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-
-        <v-row>
-          <v-col>
-            <v-card class="pa-5" outlined>
-              <v-card-title>
-                현재 선택된 공지사항
-                <!-- 수정 버튼 -->
-                <v-btn icon @click="updateClickBtn">
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <!-- 삭제 버튼 -->
-                <v-btn icon @click="deleteNotice">
-                  <v-icon color="red">mdi-delete</v-icon>
-                </v-btn>
-              </v-card-title>
-              <v-card-text>
-                <div v-if="select_id">
-                  <h2>{{ select_title }}</h2>
-                  <p>{{ select_content }}</p>
-                  <p>{{ select_writer }}</p>
-                  <p>{{ select_time }}</p>
-                </div>
-                <div v-else>
-                  <p>현재 선택된 공지사항이 없습니다.</p>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-
-         <!-- 이전 공지사항 목록 표시 -->
-         <v-row class="mt-5">
-          <v-col>
-            <v-card outlined>
-              <v-card-title>이전 공지사항 목록</v-card-title>
-              <v-list>
-                <v-list-item
-                  v-for="notice in notices"
-                  :key="notice.time"
-                  @click="selectNotice(notice)"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title><h3>{{ notice.title }}</h3> <p>{{ notice.writer }}</p></v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-col>
-        </v-row>
-
-      
-
-   
-    </v-container>
+    <!-- 이전 공지사항 목록 -->
+    <v-row class="mt-5">
+      <v-col>
+        <v-card outlined class="notice-card">
+          <v-card-title class="primary--text">이전 공지사항 목록</v-card-title>
+          <v-list>
+            <v-list-item
+              v-for="notice in notices"
+              :key="notice.time"
+              @click="selectNotice(notice)"
+              class="notice-list-item"
+            >
+              <v-list-item-content>
+                <v-list-item-title><h3>{{ notice.title }}</h3></v-list-item-title>
+                <v-list-item-subtitle>{{ notice.writer }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -588,7 +558,40 @@ async deleteAll(){
 
 </script>
 
-<style>
+<style scoped>
+.v-btn {
+  border-radius: 50%;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.v-card-title {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.writer, .time {
+  font-size: 14px;
+  color: #757575;
+}
+
+.notice-card {
+  background-color: #F5F5F5;
+  border-radius: 12px;
+}
+
+.notice-list-item {
+  transition: background-color 0.3s ease;
+}
+
+.notice-list-item:hover {
+  background-color: #e0f7fa;
+}
+
 .custom-overlay {
   position: fixed;
   top: 0;
@@ -597,9 +600,5 @@ async deleteAll(){
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9999;
-}
-
-.v-card {
-  border-radius: 12px;
 }
 </style>
