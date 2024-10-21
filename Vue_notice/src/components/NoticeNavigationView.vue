@@ -61,7 +61,7 @@
     </v-dialog>
 
     <!-- 스낵바: 알림 메시지 표시 -->
-    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout">
+    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" top>
       {{ snackbarMessage }}
     </v-snackbar>
 
@@ -154,6 +154,15 @@
 
     <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
     <v-row justify="center" align="center">
+      <!-- 이전 페이지로 이동 -->
+      <v-btn
+        :disabled="current_button_Page === 1"
+        @click="prevPage"
+        class="nav-btn"
+      >
+        이전
+      </v-btn>
+
       <v-btn
         v-for="n in currentButtons"
         :key="n"
@@ -162,17 +171,6 @@
         :color="activeButton === n ? 'success' : 'primary'"
       >
         {{ n }}
-      </v-btn>
-    </v-row>
-
-    <v-row justify="center" align="center">
-      <!-- 이전 페이지로 이동 -->
-      <v-btn
-        :disabled="current_button_Page === 1"
-        @click="prevPage"
-        class="nav-btn"
-      >
-        이전
       </v-btn>
 
       <!-- 다음 페이지로 이동 -->
@@ -501,11 +499,11 @@ async deleteAll(){
   },
   // 가장 최근 등록된 공지사항 관련 메서드
   async recentNotice(){
-    this.recent_id = this.notices[0].id
-    this.recent_title = this.notices[0].title
-    this.recent_writer = this.notices[0].writer
-    this.recent_content = this.notices[0].content
-    this.recent_time = this.notices[0].time
+    this.recent_id = this.notices[0].id;
+    this.recent_title = this.notices[0].title;
+    this.recent_writer = this.notices[0].writer;
+    this.recent_content = this.notices[0].content;
+    this.recent_time = this.notices[0].time;
   },
 
 
@@ -550,16 +548,20 @@ async deleteAll(){
       // 현재 선택된 버튼 표시
       this.activeButton = n;
 
-      // 전체 목록 개수 가져오는 메서드
+      // 전체 목록 조회 메서드
       await this.countNotice();
 
-      console.log(`${n}번 버튼을 클릭했습니다.`);
+      console.log(`현재 ${n}번 버튼입니다.`);
       
       const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
 
       try{
         const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
         this.notices = response.data
+        
+        // 가장 최근 공지사항 목록 조회 메서드
+        await this.recentNotice();
+
       }catch(error){
         this.snackbar = true;
         this.snackbarMessage = "현재 공지사항이 존재하지 않습니다. 공지사항을 추가해주세요";
