@@ -130,11 +130,68 @@
       </v-col>
     </v-row>
 
-    <!-- 이전 공지사항 목록 -->
-    <v-row class="mt-5">
+     <!-- 이전 공지사항 목록 -->
+     <v-row class="mt-5" align="center" justify="space-between">
       <v-col>
         <v-card outlined class="notice-card">
-          <v-card-title class="primary--text">이전 공지사항 목록</v-card-title>
+          <v-row>
+
+            <v-col cols="12" md="5" order="1">
+            <v-card-title cols="12" md="3" class="primary--text">이전 공지사항 목록</v-card-title>
+          </v-col>
+
+
+            <v-col cols="12" md="1" order="2">
+              <v-menu
+                offset-y
+                transition="scale-transition"
+                bottom
+                min-width="200"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="success" v-bind="attrs" v-on="on" style="margin-top: 10%;" x-large>
+                    {{ searchOption }}
+                  </v-btn>
+                </template>
+
+                <v-list>
+                  <v-list-item @click="selectOption('기본 옵션')">
+                    <v-list-item-title>기본 옵션</v-list-item-title>
+                  </v-list-item>
+
+                  <v-list-item @click="selectOption('제목')">
+                    <v-list-item-title>제목</v-list-item-title>
+                  </v-list-item>
+
+                  <v-list-item @click="selectOption('작성자')">
+                    <v-list-item-title>작성자</v-list-item-title>
+                  </v-list-item>
+
+                  <v-list-item @click="selectOption('내용')">
+                    <v-list-item-title>내용</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+
+            <v-col cols="12" md="4" order="3">
+              <!-- 검색 텍스트 필드 추가 -->
+              <v-text-field
+                v-model="searchText"
+                label="검색어 입력"
+                class="mx-2"
+                outlined
+                style="margin-top: 5%;"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="12" md="2" order="4">
+              <!-- 검색 버튼 추가 -->
+              <v-btn color="primary" style="margin-top: 10%;" x-large @click="performSearch">검색</v-btn>
+            </v-col>
+          </v-row>
+
+
           <v-list>
             <v-list-item
               v-for="notice in notices"
@@ -245,7 +302,13 @@ export default {
       set_button_page : 2, // 현재 버튼페이지에 나타낼 버튼 개수
       totalButton: null, // 전체 버튼 개수
 
-      activeButton:null, // 현재 선택된 버튼     
+      activeButton:null, // 현재 선택된 버튼    
+      
+      searchOption: '', // 현재 선택된 검색 옵션
+      searchText:'', // 검색할 내용
+      search_title: '', // 제목 검색(검색 옵션)
+      search_writer: '', // 작성자 검색(검색 옵션)
+      search_content: '', // 내용 검색(검색 옵션)
 
       
     }
@@ -570,6 +633,16 @@ async deleteAll(){
       
     },
 
+    // 검색 선택 메서드
+    selectOption(option){
+
+      // 현재 검색 메서드 전역 변수로 저장
+      this.searchOption = option;
+      console.log(this.searchOption)
+
+    }
+
+
 },
 
 
@@ -597,6 +670,7 @@ async deleteAll(){
   // 페이지 생성 후 동작하는 라이프 사이클
   created(){
     this.getByNotice(1); // 공지사항 조회하는 메서드
+    this.selectOption("기본 옵션")
   },
   computed: {
     // 현재 페이지에 표시할 버튼들 계산
