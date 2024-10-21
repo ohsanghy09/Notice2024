@@ -159,7 +159,7 @@
         :key="n"
         @click="getByNotice(n)"
         class="photo-button"
-        color="primary"
+        :color="activeButton === n ? 'success' : 'primary'"
       >
         {{ n }}
       </v-btn>
@@ -243,10 +243,12 @@ export default {
       recent_time: '',
       
 
-      all_count_data : null, // 전체 데이터 개수
       current_button_Page: 1, // 현재 버튼 페이지
       set_button_page : 2, // 현재 버튼페이지에 나타낼 버튼 개수
       totalButton: null, // 전체 버튼 개수
+
+      activeButton:null, // 현재 선택된 버튼     
+
       
     }
   },
@@ -319,7 +321,7 @@ export default {
         this.isLoading = false;
 
         // 성공하면 목록 초기화
-        this.getNotice();
+        this.getByNotice(1);
 
         // 추가 안내문구 출력
         this.snackbar = true;
@@ -334,25 +336,6 @@ export default {
         this.snackbar = true;
         this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
       }
-    },
-
-    // 공지사항 조회
-    async getNotice() {
-      try{
-
-      await this.getByNotice(1)
-
-      // 가장 최근 등록된 공지사항 설정
-      await this.recentNotice();
-
-
-      }catch(error){
-        this.snackbar = true;
-        this.snackbarMessage = "현재 공지사항 목록이 존재하지 않습니다. 공지사항을 추가해주세요.";
-        return;
-      }
-      
-
     },
 
     // 이전 공지사항 목록 클릭시 동작하는 메서드(현재 선택된 공지사항으로 적용)
@@ -429,7 +412,7 @@ try{
   this.isLoading = false;
 
   // 성공하면 목록 초기화
-  await this.getNotice();
+  await this.getByNotice(1);
 
   // 추가 안내문구 출력
   this.snackbar = true;
@@ -487,14 +470,11 @@ clearTimeout(this.loadingTimer);
 this.isLoading = false;
 
 // 성공하면 목록 초기화
-await this.getNotice();
+await this.getByNotice(1);
 
 // 추가 안내문구 출력
 this.snackbar = true;
 this.snackbarMessage = "공지사항이 삭제되었습니다.";
-
-// 공지사항 목록이 삭제로 인해 없어질 경우 공지사항 게시판 초기화
-await this.resetRecentNotice();
 
 // 현재 선택한 공지사항 삭제
 this.select_id = ''
@@ -514,13 +494,9 @@ this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시
 // 전체 삭제
 async deleteAll(){
     await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
-    await this.getNotice();
+    await this.getByNotice(1);
     this.snackbar = true;
     this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다.";
-
-    // 공지사항 목록이 삭제로 인해 없어질 경우 공지사항 게시판 초기화
-    await this.resetRecentNotice();
-
 
   },
   // 가장 최근 등록된 공지사항 관련 메서드
@@ -532,53 +508,64 @@ async deleteAll(){
     this.recent_time = this.notices[0].time
   },
 
-  // 가장 최근 등록된 공지사항 초기화 메서드
-  async resetRecentNotice() {
-
-    if(this.notices.length === 0){
-      // 가장 최근 등록된 공지사항 초기화
-      this.recent_id = '';
-      this.recent_title = '';
-      this.recent_writer = '';
-      this.recent_content = '';
-      this.recent_time = '';
-
-      // 현재 선택된 공지사항 초기화
-      this.select_id = '';
-      this.select_title = '';
-      this.select_writer = '';
-      this.select_content = '';
-      this.select_time = '';
-    }
-      
-    },
-
 
     // 이전 페이지로 이동
     prevPage() {
+
+      // 만약 현재 버튼 페이지가 1보다 클 경우 하나 빼기
       if (this.current_button_Page > 1) {
-        this.current_button_Page--;
+        this.current_button_Page--; // 이전 버튼 페이지로 이동
+        const start = (this.current_button_Page - 1) * this.set_button_page + 1; // 현재 버튼 페이지의 첫 번째 버튼 체크
+        this.getByNotice(start) // 버튼을 기준으로 공지사항을 가져오는 메서드
       }
     },
+
+
     // 다음 페이지로 이동
-    nextPage() {
-      if (this.current_button_Page < this.totalButton) {
-        this.current_button_Page++;
+    async nextPage() {
+      // 만약 현재 버튼 페이지가 전체 버튼 페이지보다 적을 경우 하나 추가
+      if (this.current_button_Page < this.totalButtonPages) {
+        this.current_button_Page++; // 다음 버튼 페이지로 이동
+        const start = (this.current_button_Page - 1) * this.set_button_page + 1; // 현재 버튼 페이지의 첫 번째 버튼 체크
+        this.getByNotice(start); // 버튼을 인자로 넣으면 버튼별 공지사항 가져오는 메서드
       }
     },
-    // 버튼 클릭 처리
-    async getByNotice(n) {
-      console.log(`${n}번 버튼을 클릭했습니다.`);
-      const start = (n - 1) * 10 + 1
-      const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
-      this.notices = response.data
+
+
+    // 총 버튼 및 버튼 페이지 개수
+    async countNotice(){
+
+    // 전체 공지사항 개수 가져오기
+    const response = await this.$axios.get("http://localhost:8080/api/notice/count")
+
+    // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
+    this.totalButton = Math.ceil(response.data / 10)
+
     },
 
 
-    // 총 버튼 개수
-    async countNotice(){
-      const response = await this.$axios.get("http://localhost:8080/api/notice/count")
-      this.totalButton = Math.ceil(response.data / 10)
+    // 버튼을 기준으로 공지사항 조회 메서드
+    async getByNotice(n) {
+
+      // 현재 선택된 버튼 표시
+      this.activeButton = n;
+
+      // 전체 목록 개수 가져오는 메서드
+      await this.countNotice();
+
+      console.log(`${n}번 버튼을 클릭했습니다.`);
+      
+      const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
+
+      try{
+        const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
+        this.notices = response.data
+      }catch(error){
+        this.snackbar = true;
+        this.snackbarMessage = "현재 공지사항이 존재하지 않습니다. 공지사항을 추가해주세요";
+        return;
+      }
+      
     },
 
 },
@@ -607,10 +594,7 @@ async deleteAll(){
 
   // 페이지 생성 후 동작하는 라이프 사이클
   created(){
-    this.getNotice(); // 공지사항 조회하는 메서드
-  },
-  mounted(){
-    this.countNotice();
+    this.getByNotice(1); // 공지사항 조회하는 메서드
   },
   computed: {
     // 현재 페이지에 표시할 버튼들 계산
@@ -620,6 +604,7 @@ async deleteAll(){
     },
     // 총 페이지 수 계산
     totalButtonPages() {
+      // 전체 버튼 개수 / 한 버튼 페이지에 나타낼 버튼의 개수 = 총 버튼 페이지 개수
       return Math.ceil(this.totalButton / this.set_button_page);
     }
   },

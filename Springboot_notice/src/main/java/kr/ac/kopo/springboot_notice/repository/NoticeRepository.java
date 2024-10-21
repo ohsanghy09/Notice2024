@@ -14,6 +14,6 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
     long countNotice();
 
     // 날짜(String)를 기준으로 데이터를 정렬하여 가져오는 쿼리
-    @Query(value = "SELECT * FROM NOTICE_ENTITY ORDER BY TO_DATE(time, 'YYYY-MM-DD HH24:MI:SS') DESC OFFSET :start ROWS FETCH NEXT 10 ROWS ONLY", nativeQuery = true)
+    @Query(value = "SELECT * FROM NOTICE_ENTITY ORDER BY TO_DATE(time, 'YYYY-MM-DD HH24:MI:SS') DESC OFFSET :start-1 ROWS FETCH NEXT 10 ROWS ONLY", nativeQuery = true)
     List<NoticeEntity> findNoticesByDate(@Param("start") int start);
 }
