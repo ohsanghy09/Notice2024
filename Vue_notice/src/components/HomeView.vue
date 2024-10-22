@@ -2,10 +2,20 @@
     <v-container fluid>
       <!-- 전체를 수직 중앙 정렬 -->
       <v-row align="center" justify="center" style="min-height: 100vh">
-        <v-col cols="12" class="text-center">
-          <!-- 상단 큰 문구 -->
-          <h1>풍경 갤러리</h1>
+        
+        <v-col cols="12">
+          <v-row class="align-center">
+            <!-- 버튼을 왼쪽에 추가 -->
+            <v-col cols="5" justify="start">
+              <v-btn color="secondary" @click="NoticeClick" x-large>공지사항</v-btn>
+            </v-col>
   
+            <!-- 상단 큰 문구 -->
+            <v-col cols="auto" justify="center" class="text-center">
+              <h1>풍경 갤러리</h1>
+            </v-col>
+          </v-row>
+          
           <!-- 버튼 4개 배치 -->
           <v-row justify="center" class="my-5">
             <v-col cols="3">
@@ -23,22 +33,23 @@
           </v-row>
   
           <!-- 중앙 사각형 (선택된 사진을 표시하는 공간) -->
-            <v-row justify="center" class="my-5">
+          <v-row justify="center" class="my-5">
             <v-col cols="8" class="text-center">
-                <v-card outlined height="400px" class="d-flex align-center justify-center">
+              <v-card outlined height="500px" class="d-flex align-center justify-center">
                 <!-- 선택된 이미지 삽입 -->
                 <v-img 
-                    v-if="selectedImage"
-                    :src="selectedImage" 
-                    alt="선택된 사진" 
-                    max-height="100%" 
+                  v-if="selectedImage"
+                  :src="selectedImage" 
+                  alt="선택된 사진" 
+                  max-height="100%" 
+                  class="selected-image"
                 ></v-img>
                 <v-card-text v-else>
-                    <h1>버튼을 클릭하고 이미지를 클릭해주세요</h1>
+                  <h1>버튼을 클릭하고 이미지를 클릭해주세요</h1>
                 </v-card-text>
-                </v-card>
+              </v-card>
             </v-col>
-            </v-row>
+          </v-row>
   
           <!-- 버튼을 누르면 이미지들이 나오는 섹션 -->
           <v-row justify="start" class="my-5" v-if="showImageList">
@@ -50,6 +61,8 @@
                   :alt="image.title" 
                   height="200px" 
                   @click="handleImageClick(image.url)" 
+                  class="image-effect"
+                  :class="{'selected': selectedImage === image.url}"
                 ></v-img>
               </v-card>
             </v-col>
@@ -225,10 +238,6 @@
               title: "And so on 8"
             },
             {
-              url: require('@/assets/And so on/And so on (9).jpg'),
-              title: "And so on 9"
-            },
-            {
               url: require('@/assets/And so on/And so on (10).jpg'),
               title: "And so on 10"
             },
@@ -243,12 +252,29 @@
       },
       handleImageClick(imageUrl) {
         this.selectedImage = imageUrl;  // 클릭한 이미지를 선택된 이미지로 설정
+      },
+      NoticeClick(){
+        // 공지사항 페이지로 리다이렉트
+      this.$router.push('/Notice');
       }
     }
   };
   </script>
   
   <style scoped>
-  /* 원하는 대로 추가 스타일을 넣을 수 있습니다. */
-  </style>
+/* 이미지 클릭 시 확대 효과 */
+.image-effect {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.image-effect:hover {
+  transform: scale(1.05); /* 이미지 확대 효과 */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* 선택된 이미지 스타일 */
+.selected {
+  border: 3px solid #42A5F5; /* 선택된 이미지 테두리 강조 */
+  transform: scale(1.1); /* 선택된 이미지 더 크게 확대 */
+}
+</style>
   

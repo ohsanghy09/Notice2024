@@ -85,6 +85,14 @@
 
     <!-- 가장 최근 등록된 공지사항 -->
     <v-row>
+
+      <!-- 화살표 아이콘 버튼을 카드 왼쪽 바깥에 배치 -->
+  <v-col cols="12" class="d-flex align-center" style="position: relative;">
+    <v-btn icon @click="BackClick">
+      <v-icon>mdi-arrow-left</v-icon>
+    </v-btn>
+  </v-col>
+
       <v-col>
         <v-card class="pa-5 notice-card rounded-xl" outlined>
           <v-card-title class="primary--text">
@@ -730,6 +738,11 @@ async deleteAll(){
         this.snackbarMessage = "서버에 에러가 발생했습니다.";
         return;
       }
+    },
+
+    BackClick(){
+      // 홈페이지로 이동
+      this.$router.push('/home');
     }
 
 },
