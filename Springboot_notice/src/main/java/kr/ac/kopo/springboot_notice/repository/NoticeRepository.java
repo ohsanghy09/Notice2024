@@ -1,6 +1,7 @@
 package kr.ac.kopo.springboot_notice.repository;
 
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +27,13 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
     // 내용에 특정 문자열이 포함된 공지사항 개수
     Long countByContentContaining(String content);
+
+    // 제목에 특정 문자열이 포함된 공지사항을 검색하고, 페이지네이션과 정렬을 적용
+    List<NoticeEntity> findByTitleContaining(String title, Pageable pageable);
+
+    // 작성자에 특정 문자열이 포함된 공지사항을 검색하고, 페이지네이션과 정렬을 적용
+    List<NoticeEntity> findByWriterContaining(String writer, Pageable pageable);
+
+    // 내용에 특정 문자열이 포함된 공지사항을 검색하고, 페이지네이션과 정렬을 적용
+    List<NoticeEntity> findByContentContaining(String content, Pageable pageable);
 }

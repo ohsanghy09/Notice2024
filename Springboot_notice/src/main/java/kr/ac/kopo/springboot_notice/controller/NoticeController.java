@@ -83,6 +83,16 @@ public class NoticeController {
         return ResponseEntity.ok(count);
     }
 
+    // 선택된 옵션과 검색어로 전체 공지사항 조회
+    @PostMapping("/searchNotice")
+    public ResponseEntity<List<NoticeEntity>> searchNotices(@RequestBody  SearchDTO searchDTO ) {
+        List<NoticeEntity> notices = noticeService.searchNotices(
+                searchDTO.getOption(),
+                searchDTO.getText(),
+                searchDTO.getStart()
+        );
+        return ResponseEntity.ok(notices);
+    }
 
 
 

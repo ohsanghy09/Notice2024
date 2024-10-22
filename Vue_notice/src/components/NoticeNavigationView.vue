@@ -151,8 +151,8 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="selectOption('기본 옵션')">
-                <v-list-item-title>기본 옵션</v-list-item-title>
+              <v-list-item @click="selectOption('전체')">
+                <v-list-item-title>전체</v-list-item-title>
               </v-list-item>
               <v-list-item @click="selectOption('제목')">
                 <v-list-item-title>제목</v-list-item-title>
@@ -302,7 +302,7 @@ export default {
       
 
       current_button_Page: 1, // 현재 버튼 페이지
-      set_button_page : 2, // 현재 버튼페이지에 나타낼 버튼 개수
+      set_button_page : 10, // 현재 버튼페이지에 나타낼 버튼 개수
       totalButton: null, // 전체 버튼 개수
 
       activeButton:null, // 현재 선택된 버튼    
@@ -313,7 +313,9 @@ export default {
       search_writer: '', // 작성자 검색(검색 옵션)
       search_content: '', // 내용 검색(검색 옵션),
 
-      search_text: '' // 검색어
+      search_text: '', // 검색어
+
+      search_status:false, // 현재 검색 상태
 
       
     }
@@ -623,6 +625,11 @@ async deleteAll(){
       
       const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
 
+      if (this.search_status){
+        this.searchBtn(n)
+        return;
+      }
+
       try{
         const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
         this.notices = response.data
@@ -643,6 +650,15 @@ async deleteAll(){
 
       // 현재 검색 메서드 전역 변수로 저장
       this.searchOption = option;
+
+      if(option === "전체"){
+        // 전체 공지사항 조회
+        this.getByNotice(1)
+
+        // 현재 검색상태 취소
+        this.search_status = false;
+        return;
+      }
 
     },
 
@@ -673,24 +689,28 @@ async deleteAll(){
         return;
       }
 
-      // const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
+      const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
 
       // 옵션2 설정
-      // const searchOption2 = {
-      //   option: this.searchOption,
-      //   text: this.search_text,
-      //   start: start
-      // }
+      const searchOption2 = {
+        option: this.searchOption,
+        text: this.search_text,
+        start: start
+      }
 
-      // try{
-      //   //옵션 적용으로 데이터 가져오는 http 통신
-      //   const response = await this.$axios.post("http://localhost:8080/api/notice/searchNotice", searchOption2)
-      //   this.notices = response.data
-      // }catch(error){
-      //   this.snackbar = true;
-      //   this.snackbarMessage = "서버에 에러가 발생했습니다.";
-      //   return;
-      // }
+      try{
+        //옵션 적용으로 데이터 가져오는 http 통신
+        const response = await this.$axios.post("http://localhost:8080/api/notice/searchNotice", searchOption2)
+        this.notices = response.data;
+        
+        // 현재 검색상태 
+        this.search_status = true;
+        console.log()
+      }catch(error){
+        this.snackbar = true;
+        this.snackbarMessage = "서버에 에러가 발생했습니다.";
+        return;
+      }
     }
 
 },

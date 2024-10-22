@@ -3,8 +3,12 @@ package kr.ac.kopo.springboot_notice.service;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import kr.ac.kopo.springboot_notice.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,6 +92,23 @@ public class NoticeServiceImpl implements NoticeService{
                 return noticeRepository.countByContentContaining(text);
             default:
                 return 0L;
+        }
+    }
+
+    @Override
+    public List<NoticeEntity> searchNotices(String option, String text, int start) {
+        // 검색 옵션에 따른 레파지토리 호출
+        Pageable pageable = PageRequest.of(start / 10, 10, Sort.by("time").descending()); // 날짜 기준 내림차순 정렬 및 페이지네이션
+
+        switch (option) {
+            case "제목":
+                return noticeRepository.findByTitleContaining(text, pageable);
+            case "작성자":
+                return noticeRepository.findByWriterContaining(text, pageable);
+            case "내용":
+                return noticeRepository.findByContentContaining(text, pageable);
+            default:
+                return Collections.emptyList();
         }
     }
 }

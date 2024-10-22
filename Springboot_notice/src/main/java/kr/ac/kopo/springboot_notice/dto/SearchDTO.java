@@ -9,4 +9,5 @@ public class SearchDTO {
 
     private String option; // 검색 옵션 (제목, 작성자 등)
     private String text; // 검색어
+    private int start; // 공지사항 시작 인덱스
 }

@@ -29,4 +29,8 @@ public interface NoticeService {
 
     // 검색된 옵션으로 전체 데이터 개수 조회
     Long getNoticeCountBySearch(String option, String text);
+
+    // 검색된 옵션으로 전체 공지사항 조회
+    List<NoticeEntity> searchNotices(String option, String text, int start);
+
 }
