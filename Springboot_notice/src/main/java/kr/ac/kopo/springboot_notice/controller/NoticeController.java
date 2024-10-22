@@ -1,6 +1,7 @@
 package kr.ac.kopo.springboot_notice.controller;
 
 import kr.ac.kopo.springboot_notice.dto.NoticeDTO;
+import kr.ac.kopo.springboot_notice.dto.SearchDTO;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import kr.ac.kopo.springboot_notice.repository.NoticeRepository;
 import kr.ac.kopo.springboot_notice.service.NoticeService;
@@ -74,5 +75,16 @@ public class NoticeController {
 
         return new ResponseEntity<>(notices, HttpStatus.OK);
     }
+
+    // 선택된 옵션과 검색어로 전체 데이터 개수 조회
+    @PostMapping("/searchCount")
+    public ResponseEntity<Long> getSearchCount(@RequestBody SearchDTO searchDTO){
+        Long count = noticeService.getNoticeCountBySearch(searchDTO.getOption(), searchDTO.getText());
+        return ResponseEntity.ok(count);
+    }
+
+
+
+
 }
 

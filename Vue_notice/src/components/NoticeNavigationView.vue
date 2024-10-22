@@ -181,7 +181,7 @@
 
         <!-- 검색 버튼 -->
         <v-col cols="auto">
-          <v-btn color="primary" large @click="searchBtn" class="rounded-xl">
+          <v-btn color="primary" large @click="searchBtn(1)" class="rounded-xl">
             검색
           </v-btn>
         </v-col>
@@ -648,6 +648,8 @@ async deleteAll(){
 
     // 검색 버튼 메서드(현재 버튼)
     async searchBtn(n){
+
+      // 옵션 데이터 전달
       const searchOption = {
         option: this.searchOption,
         text: this.search_text
@@ -659,13 +661,36 @@ async deleteAll(){
       this.activeButton = n;
 
       try{
-        // // 전체 공지사항 개수 가져오기
-        // const response = await this.$axios.get("http://localhost:8080/api/notice/count")
-
-        // // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
-        // this.totalButton = Math.ceil(response.data / 10) 
+        // 전체 공지사항 개수 가져오기(옵션 전체 공지사항 개수 가져오는 EndPoint)
+        const response = await this.$axios.post("http://localhost:8080/api/notice/searchCount", searchOption)
+        console.log(response.data)
+        // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
+        this.totalButton = Math.ceil(response.data / 10) 
+      
+      } catch(error){
+        this.snackbar = true;
+        this.snackbarMessage = "서버에 에러가 발생했습니다.";
+        return;
       }
 
+      // const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
+
+      // 옵션2 설정
+      // const searchOption2 = {
+      //   option: this.searchOption,
+      //   text: this.search_text,
+      //   start: start
+      // }
+
+      // try{
+      //   //옵션 적용으로 데이터 가져오는 http 통신
+      //   const response = await this.$axios.post("http://localhost:8080/api/notice/searchNotice", searchOption2)
+      //   this.notices = response.data
+      // }catch(error){
+      //   this.snackbar = true;
+      //   this.snackbarMessage = "서버에 에러가 발생했습니다.";
+      //   return;
+      // }
     }
 
 },

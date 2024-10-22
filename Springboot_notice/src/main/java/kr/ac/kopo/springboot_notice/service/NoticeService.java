@@ -26,4 +26,7 @@ public interface NoticeService {
 
     // 시작 번호를 토대로 10개의 데이터 조회
     List<NoticeEntity> getNoticesByDate(int start);
+
+    // 검색된 옵션으로 전체 데이터 개수 조회
+    Long getNoticeCountBySearch(String option, String text);
 }

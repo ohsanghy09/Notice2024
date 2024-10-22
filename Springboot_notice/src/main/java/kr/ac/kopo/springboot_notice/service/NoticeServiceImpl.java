@@ -75,4 +75,19 @@ public class NoticeServiceImpl implements NoticeService{
     public List<NoticeEntity> getNoticesByDate(int start){
         return noticeRepository.findNoticesByDate(start);
     }
+
+    @Override
+    public Long getNoticeCountBySearch(String option, String text) {
+        // 검색 옵션에 따라 레파지토리의 다른 쿼리를 호출
+        switch (option) {
+            case "제목":
+                return noticeRepository.countByTitleContaining(text);
+            case "작성자":
+                return noticeRepository.countByWriterContaining(text);
+            case "내용":
+                return noticeRepository.countByContentContaining(text);
+            default:
+                return 0L;
+        }
+    }
 }
