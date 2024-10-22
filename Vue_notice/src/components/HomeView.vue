@@ -19,16 +19,16 @@
           <!-- 버튼 4개 배치 -->
           <v-row justify="center" class="my-5">
             <v-col cols="3">
-              <v-btn block color="primary" @click="showImages(1)">푸른 하늘</v-btn>
+              <v-btn block color="sky blue" @click="showImages(1)">푸른 하늘</v-btn>
             </v-col>
             <v-col cols="3">
               <v-btn block color="primary" @click="showImages(2)">바다</v-btn>
             </v-col>
             <v-col cols="3">
-              <v-btn block color="primary" @click="showImages(3)">해질녘</v-btn>
+              <v-btn block color="soft orange" @click="showImages(3)">해질녘</v-btn>
             </v-col>
             <v-col cols="3">
-              <v-btn block color="primary" @click="showImages(4)">그 외</v-btn>
+              <v-btn block color="success" @click="showImages(4)">그 외</v-btn>
             </v-col>
           </v-row>
   

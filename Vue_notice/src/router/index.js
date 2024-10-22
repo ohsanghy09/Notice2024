@@ -2,7 +2,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Notice from '@/components/NoticeNavigationView.vue';
-import About from '@/components/AboutView.vue';
 import Main from '@/components/MainView.vue'
 import Home from '@/components/HomeView.vue'
 
@@ -20,11 +19,6 @@ export default new Router({
       path: '/Notice',
       name: 'Notice',
       component: Notice
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: About
     },
     {
       path: '/home',

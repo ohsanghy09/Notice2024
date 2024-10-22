@@ -388,7 +388,7 @@ export default {
 
 
         // 공지사항 등록 요청
-        await this.$axios.post('http://localhost:8080/api/notice/add', addNotice);
+        await this.$axios.post('/api/notice/add', addNotice);
         
         // 공지사항 등록 요청이 3초보다 빨리 된다면 타이머 제거
         clearTimeout(this.loadingTimer);
@@ -479,7 +479,7 @@ try{
 
 
   // 공지사항 수정 요청
-  await this.$axios.post('http://localhost:8080/api/notice/update', updateNotice);
+  await this.$axios.post('/api/notice/update', updateNotice);
   
   // 공지사항 수정 요청이 3초보다 빨리 된다면 타이머 제거
   clearTimeout(this.loadingTimer);
@@ -537,7 +537,7 @@ this.isLoadingMessage = "공지사항 삭제 중.."
 
 
 // 공지사항 삭제 요청
-await this.$axios.post('http://localhost:8080/api/notice/delete', deleteNotice);
+await this.$axios.post('/api/notice/delete', deleteNotice);
 
 // 공지사항 삭제 요청이 3초보다 빨리 된다면 타이머 제거
 clearTimeout(this.loadingTimer);
@@ -569,7 +569,7 @@ this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시
 
 // 전체 삭제
 async deleteAll(){
-    await this.$axios.delete('http://localhost:8080/api/notice/deleteAll')
+    await this.$axios.delete('/api/notice/deleteAll')
     await this.getByNotice(1);
     this.snackbar = true;
     this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다.";
@@ -612,7 +612,7 @@ async deleteAll(){
     async countNotice(){
 
     // 전체 공지사항 개수 가져오기
-    const response = await this.$axios.get("http://localhost:8080/api/notice/count")
+    const response = await this.$axios.get("/api/notice/count")
 
     // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
     this.totalButton = Math.ceil(response.data / 10)
@@ -640,7 +640,7 @@ async deleteAll(){
       
 
       try{
-        const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
+        const response = await this.$axios.post('/api/notice/getByStart', { start });
         this.notices = response.data
         console.log(this.notices)
 
@@ -702,7 +702,7 @@ async deleteAll(){
 
       try{
         // 전체 공지사항 개수 가져오기(옵션 전체 공지사항 개수 가져오는 EndPoint)
-        const response = await this.$axios.post("http://localhost:8080/api/notice/searchCount", searchOption)
+        const response = await this.$axios.post("/api/notice/searchCount", searchOption)
         console.log(response.data)
         // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
         this.totalButton = Math.ceil(response.data / 10) 
@@ -724,7 +724,7 @@ async deleteAll(){
 
       try{
         //옵션 적용으로 데이터 가져오는 http 통신
-        const response = await this.$axios.post("http://localhost:8080/api/notice/searchNotice", searchOption2)
+        const response = await this.$axios.post("/api/notice/searchNotice", searchOption2)
         this.notices = response.data;
         
         this.snackbar = true;
