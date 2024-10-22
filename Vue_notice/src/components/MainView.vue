@@ -19,7 +19,7 @@ export default {
   methods: {
     handleLogin() {
       // 로그인 페이지로 리다이렉트
-      this.$router.push('/login');
+      this.$router.push('/home');
     }
   }
 };

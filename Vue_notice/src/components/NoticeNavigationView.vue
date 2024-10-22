@@ -618,9 +618,6 @@ async deleteAll(){
       // 현재 선택된 버튼 표시
       this.activeButton = n;
 
-      // 전체 목록 조회 메서드
-      await this.countNotice();
-
       console.log(`현재 ${n}번 버튼입니다.`);
       
       const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
@@ -629,6 +626,10 @@ async deleteAll(){
         this.searchBtn(n)
         return;
       }
+
+      // 전체 목록 조회 메서드
+      await this.countNotice();
+      
 
       try{
         const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
