@@ -1,6 +1,7 @@
 package kr.ac.kopo.springboot_notice.repository;
 
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,14 +11,16 @@ import java.util.List;
 
 public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
-    // 전체 데이터 조회
+    // 전체 데이터 조회를 데이터 베이스 쿼리로 가져올 수 있는 경우
     @Query("SELECT COUNT(p) FROM NoticeEntity p")
     long countNotice();
 
-    // 날짜(String)를 기준으로 데이터를 정렬하여 가져오는 쿼리
+    // 날짜(String)를 기준으로 데이터를 정렬하여 가져오는 쿼리도 사용할 수 있음
     @Query(value = "SELECT * FROM NOTICE_ENTITY ORDER BY TO_DATE(time, 'YYYY-MM-DD HH24:MI:SS') DESC OFFSET :start-1 ROWS FETCH NEXT 10 ROWS ONLY", nativeQuery = true)
     List<NoticeEntity> findNoticesByDate(@Param("start") int start);
 
+    // 날짜 기준으로 내림차순 정렬된 공지사항을 페이징하여 반환
+    Page<NoticeEntity> findAllByOrderByTimeDesc(Pageable pageable);
 
     // 제목에 특정 문자열이 포함된 공지사항 개수
     Long countByTitleContaining(String title);
@@ -36,4 +39,6 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
     // 내용에 특정 문자열이 포함된 공지사항을 검색하고, 페이지네이션과 정렬을 적용
     List<NoticeEntity> findByContentContaining(String content, Pageable pageable);
+
+
 }

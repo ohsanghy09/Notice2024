@@ -23,12 +23,6 @@ public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
-    // 공지사항 조회
-    @GetMapping("find")
-    public List<NoticeEntity> getAllNotice() {
-        return noticeService.getAllNotice();
-    }
-
     // 공지사항 수정
     @PostMapping("/update")
     public ResponseEntity<NoticeEntity> updateNotice(@RequestBody NoticeEntity noticeEntity) {
@@ -67,13 +61,10 @@ public class NoticeController {
     //시작페이지에 따른 공지사항 목록 조회
     @PostMapping("/getByStart")
     public ResponseEntity<List<NoticeEntity>> getNoticesByStart(@RequestBody Map<String, Integer> request) {
-        // 클라이언트로부터 받은 start 값
-        int start = request.get("start");
+        int start = request.get("start");  // 클라이언트에서 전송한 start 값
 
-        // 서비스에서 데이터 가져오기
-        List<NoticeEntity> notices = noticeService.getNoticesByDate(start);
-
-        return new ResponseEntity<>(notices, HttpStatus.OK);
+        List<NoticeEntity> notices = noticeService.getNoticesByPageAndDate(start);
+        return ResponseEntity.ok(notices);  // 정렬 및 페이징된 공지사항 반환
     }
 
     // 선택된 옵션과 검색어로 전체 데이터 개수 조회

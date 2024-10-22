@@ -302,7 +302,7 @@ export default {
       
 
       current_button_Page: 1, // 현재 버튼 페이지
-      set_button_page : 10, // 현재 버튼페이지에 나타낼 버튼 개수
+      set_button_page : 5, // 현재 버튼페이지에 나타낼 버튼 개수
       totalButton: null, // 전체 버튼 개수
 
       activeButton:null, // 현재 선택된 버튼    
@@ -634,7 +634,8 @@ async deleteAll(){
       try{
         const response = await this.$axios.post('http://localhost:8080/api/notice/getByStart', { start });
         this.notices = response.data
-        
+        console.log(this.notices)
+
         // 가장 최근 공지사항 목록 조회 메서드
         await this.recentNotice();
 
@@ -649,17 +650,31 @@ async deleteAll(){
     // 검색 선택 메서드
     selectOption(option){
 
-      // 현재 검색 메서드 전역 변수로 저장
-      this.searchOption = option;
+      //현재 검색 상태 취소
+      this.search_status = false;
 
+      this.search_text = '';
+
+    
       if(option === "전체"){
         // 전체 공지사항 조회
         this.getByNotice(1)
 
         // 현재 검색상태 취소
         this.search_status = false;
+        
+        this.snackbar = true;
+        this.snackbarMessage = "전체 공지사항으로 조회되었습니다."
+
         return;
       }
+
+      // 현재 검색 메서드 전역 변수로 저장
+      this.searchOption = option;
+
+      console.log(this.searchOption)
+
+      
 
     },
 
@@ -704,6 +719,9 @@ async deleteAll(){
         const response = await this.$axios.post("http://localhost:8080/api/notice/searchNotice", searchOption2)
         this.notices = response.data;
         
+        this.snackbar = true;
+        this.snackbarMessage = `검색되었습니다.`
+
         // 현재 검색상태 
         this.search_status = true;
         console.log()

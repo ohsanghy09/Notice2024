@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface NoticeService {
 
-    // 공지사항 내용 조회
-    List<NoticeEntity> getAllNotice();
 
     // 공지사항 내용 수정
     NoticeEntity updateNotice(NoticeEntity noticeEntity);
@@ -32,5 +30,9 @@ public interface NoticeService {
 
     // 검색된 옵션으로 전체 공지사항 조회
     List<NoticeEntity> searchNotices(String option, String text, int start);
+
+
+    // start 인덱스를 기반으로 공지사항을 가져옴
+    List<NoticeEntity> getNoticesByPageAndDate(int start);
 
 }

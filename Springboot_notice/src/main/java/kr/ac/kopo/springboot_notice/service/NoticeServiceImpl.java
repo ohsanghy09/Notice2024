@@ -3,6 +3,7 @@ package kr.ac.kopo.springboot_notice.service;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import kr.ac.kopo.springboot_notice.repository.NoticeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,12 +19,6 @@ public class NoticeServiceImpl implements NoticeService{
     // 데이터 베이스 관련 repository 객체 생성
     @Autowired
     private NoticeRepository noticeRepository;
-
-    // 전체 공지사항 조회
-    @Override
-    public List<NoticeEntity> getAllNotice() {
-        return noticeRepository.findAll();  // 데이터베이스에서 전체 목록 조회 후 반환
-    }
 
     // 공지사항 내용 수정
     @Override
@@ -111,4 +106,17 @@ public class NoticeServiceImpl implements NoticeService{
                 return Collections.emptyList();
         }
     }
+
+    // 전체 공지사항 페이지네이션 조회
+    @Override
+    public List<NoticeEntity> getNoticesByPageAndDate(int start) {
+        // 페이지네이션 및 문자열 기반 정렬 설정
+        Pageable pageable = PageRequest.of((start - 1) / 10, 10, Sort.by(Sort.Direction.DESC, "time"));
+
+        // JPA가 문자열로 정렬하여 Page 객체 반환
+        Page<NoticeEntity> page = noticeRepository.findAllByOrderByTimeDesc(pageable);
+
+        return page.getContent();  // Page 객체에서 실제 데이터 추출
+    }
+
 }
