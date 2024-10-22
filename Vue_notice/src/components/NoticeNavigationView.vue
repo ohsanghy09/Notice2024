@@ -8,7 +8,9 @@
       bottom
       right
       color="primary"
+      dark
       @click="addClickBtn"
+      style="box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -19,16 +21,17 @@
       fixed
       bottom
       right
-      color="red"
+      color="error"
+      dark
       @click="deleteAll"
-      style="margin-right: 70px;"
+      style="margin-right: 70px; box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);"
     >
-      <v-icon color="white">mdi-delete</v-icon>
+      <v-icon>mdi-delete</v-icon>
     </v-btn>
 
     <!-- 공지사항 추가 다이얼로그 -->
     <v-dialog v-model="add_dialog" max-width="500px">
-      <v-card>
+      <v-card elevation="2" class="rounded-xl">
         <v-card-title class="headline primary--text">공지사항 추가</v-card-title>
         <v-card-text>
           <v-text-field v-model="add_title" label="제목" outlined></v-text-field>
@@ -38,14 +41,14 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" text @click="add_dialog = false">취소</v-btn>
-          <v-btn color="primary" @click="addNotice">추가</v-btn>
+          <v-btn color="primary" dark @click="addNotice">추가</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- 공지사항 수정 다이얼로그 -->
     <v-dialog v-model="update_dialog" max-width="500px">
-      <v-card>
+      <v-card elevation="2" class="rounded-xl">
         <v-card-title class="headline primary--text">공지사항 수정</v-card-title>
         <v-card-text>
           <v-text-field v-model="update_title" label="제목" outlined></v-text-field>
@@ -55,7 +58,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" text @click="update_dialog = false">취소</v-btn>
-          <v-btn color="primary" @click="updateNotice">수정</v-btn>
+          <v-btn color="primary" dark @click="updateNotice">수정</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -67,7 +70,7 @@
 
     <!-- 로딩 다이얼로그 -->
     <v-dialog v-model="isLoading" persistent hide-overlay width="300">
-      <v-card color="#FFC107" dark>
+      <v-card color="#FFC107" dark class="rounded-xl">
         <v-card-text>
           <div class="text-center">
             <h3>{{ isLoadingMessage }}</h3>
@@ -83,17 +86,20 @@
     <!-- 가장 최근 등록된 공지사항 -->
     <v-row>
       <v-col>
-        <v-card class="pa-5 notice-card" outlined>
-          <v-card-title class="primary--text">가장 최근 등록된 공지사항</v-card-title>
+        <v-card class="pa-5 notice-card rounded-xl" outlined>
+          <v-card-title class="primary--text">
+            <v-icon left>mdi-bell-ring-outline</v-icon>
+            최근 공지사항
+          </v-card-title>
           <v-card-text>
             <div v-if="recent_id">
               <h2 class="title">{{ recent_title }}</h2>
               <p>{{ recent_content }}</p>
               <p class="writer">작성자: {{ recent_writer }}</p>
-              <p class="time">작성 시간: {{ recent_time }}</p>
+              <p class="time">작성날짜 : {{ recent_time }}</p>
             </div>
             <div v-else>
-              <p>가장 최근 등록된 공지사항이 없습니다.</p>
+              <p>최근 공지사항이 없습니다.</p>
             </div>
           </v-card-text>
         </v-card>
@@ -103,7 +109,7 @@
     <!-- 현재 선택된 공지사항 -->
     <v-row>
       <v-col>
-        <v-card class="pa-5 notice-card" outlined>
+        <v-card class="pa-5 notice-card rounded-xl" outlined>
           <v-card-title class="primary--text">
             현재 선택된 공지사항
             <!-- 수정 버튼 -->
@@ -120,7 +126,7 @@
               <h2 class="title">{{ select_title }}</h2>
               <p>{{ select_content }}</p>
               <p class="writer">작성자: {{ select_writer }}</p>
-              <p class="time">작성 시간: {{ select_time }}</p>
+              <p class="time">작성날짜: {{ select_time }}</p>
             </div>
             <div v-else>
               <p>현재 선택된 공지사항이 없습니다.</p>
@@ -130,117 +136,114 @@
       </v-col>
     </v-row>
 
-     <!-- 이전 공지사항 목록 -->
-     <v-row class="mt-5" align="center" justify="space-between">
-      <v-col>
-        <v-card outlined class="notice-card">
-          <v-row>
+    <!-- 테두리로 감싼 공지사항 목록 영역 -->
+    <v-card class="mt-5 pa-5 rounded-xl" elevation="3" outlined style="border-radius: 12px;">
+      <v-card-title class="primary--text">공지사항 목록</v-card-title>
 
-            <v-col cols="12" md="5" order="1">
-            <v-card-title cols="12" md="3" class="primary--text">이전 공지사항 목록</v-card-title>
-          </v-col>
+      <!-- 이전 공지사항 목록 및 검색 -->
+      <v-row class="mt-5" align="center" justify="start">
+        <!-- 기본 옵션 버튼 -->
+        <v-col cols="auto">
+          <v-menu offset-y transition="scale-transition" bottom min-width="200">
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn color="success" v-bind="attrs" v-on="on" large class="rounded-xl">
+                {{ searchOption }}
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="selectOption('기본 옵션')">
+                <v-list-item-title>기본 옵션</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="selectOption('제목')">
+                <v-list-item-title>제목</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="selectOption('작성자')">
+                <v-list-item-title>작성자</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="selectOption('내용')">
+                <v-list-item-title>내용</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-col>
 
+        <!-- 검색어 입력 필드 -->
+        <v-col cols="5">
+          <v-text-field
+            v-model="search_text"
+            label="검색어를 입력해주세요."
+            outlined
+            dense
+            hide-details
+            class="rounded-xl"
+          ></v-text-field>
+        </v-col>
 
-            <v-col cols="12" md="1" order="2">
-              <v-menu
-                offset-y
-                transition="scale-transition"
-                bottom
-                min-width="200"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="success" v-bind="attrs" v-on="on" style="margin-top: 10%;" x-large>
-                    {{ searchOption }}
-                  </v-btn>
-                </template>
+        <!-- 검색 버튼 -->
+        <v-col cols="auto">
+          <v-btn color="primary" large @click="searchBtn" class="rounded-xl">
+            검색
+          </v-btn>
+        </v-col>
+      </v-row>
 
-                <v-list>
-                  <v-list-item @click="selectOption('기본 옵션')">
-                    <v-list-item-title>기본 옵션</v-list-item-title>
-                  </v-list-item>
+      <!-- 공지사항 목록 -->
+      <v-list class="mt-4">
+        <v-list-item
+          v-for="notice in notices"
+          :key="notice.time"
+          @click="selectNotice(notice)"
+          class="notice-list-item"
+          style="border-bottom: 1px solid #eee; padding: 10px 0;"
+        >
+          <v-list-item-content>
+            <v-list-item-title>
+              <strong>{{ notice.title }}</strong>
+            </v-list-item-title>
+            <v-list-item-subtitle>{{ notice.writer }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
 
-                  <v-list-item @click="selectOption('제목')">
-                    <v-list-item-title>제목</v-list-item-title>
-                  </v-list-item>
+      <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
+      <v-row justify="center" align="center" class="mt-4">
+        <!-- 이전 페이지로 이동 -->
+        <v-btn
+          :disabled="current_button_Page === 1"
+          @click="prevPage"
+          class="nav-btn"
+          outlined
+        >
+          이전
+        </v-btn>
 
-                  <v-list-item @click="selectOption('작성자')">
-                    <v-list-item-title>작성자</v-list-item-title>
-                  </v-list-item>
+        <v-btn
+          v-for="n in currentButtons"
+          :key="n"
+          @click="getByNotice(n)"
+          class="photo-button"
+          :color="activeButton === n ? 'success' : 'primary'"
+          outlined
+          style="margin-left: 5px; margin-right: 5px;"
+        >
+          {{ n }}
+        </v-btn>
 
-                  <v-list-item @click="selectOption('내용')">
-                    <v-list-item-title>내용</v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </v-col>
-
-            <v-col cols="12" md="4" order="3">
-              <!-- 검색 텍스트 필드 추가 -->
-              <v-text-field
-                v-model="searchText"
-                label="검색어 입력"
-                class="mx-2"
-                outlined
-                style="margin-top: 5%;"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="2" order="4">
-              <!-- 검색 버튼 추가 -->
-              <v-btn color="primary" style="margin-top: 10%;" x-large @click="performSearch">검색</v-btn>
-            </v-col>
-          </v-row>
-
-
-          <v-list>
-            <v-list-item
-              v-for="notice in notices"
-              :key="notice.time"
-              @click="selectNotice(notice)"
-              class="notice-list-item"
-            >
-              <v-list-item-content>
-                <v-list-item-title><h3>{{ notice.title }}</h3></v-list-item-title>
-                <v-list-item-subtitle>{{ notice.writer }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
-    <v-row justify="center" align="center">
-      <!-- 이전 페이지로 이동 -->
-      <v-btn
-        :disabled="current_button_Page === 1"
-        @click="prevPage"
-        class="nav-btn"
-      >
-        이전
-      </v-btn>
-
-      <v-btn
-        v-for="n in currentButtons"
-        :key="n"
-        @click="getByNotice(n)"
-        class="photo-button"
-        :color="activeButton === n ? 'success' : 'primary'"
-      >
-        {{ n }}
-      </v-btn>
-
-      <!-- 다음 페이지로 이동 -->
-      <v-btn
-        :disabled="current_button_Page === totalButtonPages"
-        @click="nextPage"
-        class="nav-btn"
-      >
-        다음
-      </v-btn>
-    </v-row>
+        <!-- 다음 페이지로 이동 -->
+        <v-btn
+          :disabled="current_button_Page === totalButtonPages"
+          @click="nextPage"
+          class="nav-btn"
+          outlined
+        >
+          다음
+        </v-btn>
+      </v-row>
+    </v-card>
   </v-container>
 </template>
+
+
 
 <script>
 export default {
@@ -308,7 +311,9 @@ export default {
       searchText:'', // 검색할 내용
       search_title: '', // 제목 검색(검색 옵션)
       search_writer: '', // 작성자 검색(검색 옵션)
-      search_content: '', // 내용 검색(검색 옵션)
+      search_content: '', // 내용 검색(검색 옵션),
+
+      search_text: '' // 검색어
 
       
     }
@@ -638,10 +643,30 @@ async deleteAll(){
 
       // 현재 검색 메서드 전역 변수로 저장
       this.searchOption = option;
-      console.log(this.searchOption)
+
+    },
+
+    // 검색 버튼 메서드(현재 버튼)
+    async searchBtn(n){
+      const searchOption = {
+        option: this.searchOption,
+        text: this.search_text
+      }
+
+      console.log(searchOption)
+
+      // 현재 선택된 버튼 표시
+      this.activeButton = n;
+
+      try{
+        // // 전체 공지사항 개수 가져오기
+        // const response = await this.$axios.get("http://localhost:8080/api/notice/count")
+
+        // // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
+        // this.totalButton = Math.ceil(response.data / 10) 
+      }
 
     }
-
 
 },
 
