@@ -573,15 +573,30 @@ async deleteAll(){
     await this.getByNotice(1);
     this.snackbar = true;
     this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다.";
+    // 현재 선택한 공지사항 삭제
+    this.select_id = ''
 
   },
   // 가장 최근 등록된 공지사항 관련 메서드
   async recentNotice(){
+
+    if (this.notices.length === 0){
+    this.recent_id = '';
+    this.recent_title = '';
+    this.recent_writer = '';
+    this.recent_content = '';
+    this.recent_time = '';
+    return;
+    }
+
+    
     this.recent_id = this.notices[0].id;
     this.recent_title = this.notices[0].title;
     this.recent_writer = this.notices[0].writer;
     this.recent_content = this.notices[0].content;
     this.recent_time = this.notices[0].time;
+
+   
   },
 
 
@@ -650,6 +665,9 @@ async deleteAll(){
       }catch(error){
         this.snackbar = true;
         this.snackbarMessage = "현재 공지사항이 존재하지 않습니다. 공지사항을 추가해주세요";
+
+         // 가장 최근 공지사항 목록 조회 메서드
+         await this.recentNotice();
         return;
       }
       
