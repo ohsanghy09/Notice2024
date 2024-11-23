@@ -4,6 +4,8 @@ import Router from 'vue-router';
 import Notice from '@/components/NoticeNavigationView.vue';
 import Main from '@/components/MainView.vue'
 import Home from '@/components/HomeView.vue'
+import AddMember from '@/components/AddMemberView.vue'
+import Login from '@/components/LoginView.vue'
 
 Vue.use(Router);
 
@@ -24,6 +26,16 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/AddMember',
+      name: 'AddMember',
+      component: AddMember
+    },
+    {
+      path: '/Login',
+      name: 'Login',
+      component: Login
     }
   ]
 });

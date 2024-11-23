@@ -351,18 +351,15 @@ export default {
 
       // 입력 조건(공백 제거)
       if (!this.add_title.trim()){
-        this.snackbar = true;
-        this.snackbarMessage = "제목을 입력해주세요."
+        this.toast.error("제목을 입력해주세요.")
         return;
       }
       if (!this.add_writer.trim()){
-        this.snackbar = true;
-        this.snackbarMessage = "작성자를 입력해주세요."
+        this.toast.error("작성자를 입력해주세요.")
         return;
       }
       if (!this.add_content.trim()){
-        this.snackbar = true;
-        this.snackbarMessage = "내용을 입력해주세요."
+        this.toast.error("내용을 입력해주세요.")
         return;
       }
 
@@ -400,8 +397,7 @@ export default {
         this.getByNotice(1);
 
         // 추가 안내문구 출력
-        this.snackbar = true;
-        this.snackbarMessage = "공지사항이 추가되었습니다.";
+        this.$toast.success("공지사항이 추가되었습니다.");
 
         // 현재 출력된 다이얼로그 닫기
         this.add_dialog = false;
@@ -409,8 +405,7 @@ export default {
       
       // 통신에 오류가 발생할 경우
       catch(error){
-        this.snackbar = true;
-        this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
+        this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.");
       }
     },
 
@@ -426,8 +421,7 @@ export default {
     // 수정 버튼을 클릭하면 나타나는 메서드(수정 다이얼로그 출력)
     updateClickBtn(){
       if(!this.select_id){
-        this.snackbar = true;
-        this.snackbarMessage = "이전 공지사항 목록에서 수정할 공지사항을 선택해주세요."
+        this.$toast.info("이전 공지사항 목록에서 수정할 공지사항을 선택해주세요.");
         return;
       }
       
@@ -447,13 +441,11 @@ export default {
 
     // 입력 조건(공백 제거)
     if (!this.update_title.trim()){
-      this.snackbar = true;
-      this.snackbarMessage = "제목을 입력해주세요."
+      this.$toast.error("제목을 입력해주세요.");
       return;
     }
     if (!this.update_content.trim()){
-      this.snackbar = true;
-      this.snackbarMessage = "내용을 입력해주세요."
+      this.$toast.error("내용을 입력해주세요.");
       return;
     }
 
@@ -491,8 +483,7 @@ try{
   await this.getByNotice(1);
 
   // 추가 안내문구 출력
-  this.snackbar = true;
-  this.snackbarMessage = "공지사항이 수정되었습니다.";
+  this.$toast.success("공지사항이 수정되었습니다.");
 
   // 현재 선택한 공지사항으로 데이터 저장
   this.selectNotice(this.notices[0])
@@ -504,8 +495,7 @@ try{
 
 // 통신에 오류가 발생할 경우
 catch(error){
-  this.snackbar = true;
-  this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
+  this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.");
 }
 },
     
@@ -517,8 +507,7 @@ this.delete_id = this.select_id
 
 // 현재 선택한 공지사항이 없이 삭제하려는 경우
 if(!this.delete_id){
-  this.snackbar = true;
-  this.snackbarMessage = "이전 공지사항 목록에서 삭제할 공지사항을 선택해주세요.";
+  this.$toast.info("이전 공지사항 목록에서 삭제할 공지사항을 선택해주세요.");
   return;
 }
 
@@ -549,8 +538,7 @@ this.isLoading = false;
 await this.getByNotice(1);
 
 // 추가 안내문구 출력
-this.snackbar = true;
-this.snackbarMessage = "공지사항이 삭제되었습니다.";
+this.$toast.success("공지사항이 삭제되었습니다.");
 
 // 현재 선택한 공지사항 삭제
 this.select_id = ''
@@ -562,8 +550,7 @@ this.update_dialog = false;
 
 // 통신에 오류가 발생할 경우
 catch(error){
-this.snackbar = true;
-this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.";
+this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시도해주세요.");
 }
 },
 
@@ -571,8 +558,7 @@ this.snackbarMessage = "서버 통신에서 에러가 발생했습니다. 다시
 async deleteAll(){
     await this.$axios.delete('/api/notice/deleteAll')
     await this.getByNotice(1);
-    this.snackbar = true;
-    this.snackbarMessage = "공지사항 목록이 전체 삭제 되었습니다.";
+    this.$toast.success("공지사항 목록이 전체 삭제 되었습니다.");
     // 현재 선택한 공지사항 삭제
     this.select_id = ''
 
@@ -663,8 +649,7 @@ async deleteAll(){
         await this.recentNotice();
 
       }catch(error){
-        this.snackbar = true;
-        this.snackbarMessage = "현재 공지사항이 존재하지 않습니다. 공지사항을 추가해주세요";
+        this.$toast.error("현재 공지사항이 존재하지 않습니다. 공지사항을 추가해주세요.");
 
          // 가장 최근 공지사항 목록 조회 메서드
          await this.recentNotice();
@@ -689,9 +674,9 @@ async deleteAll(){
         // 현재 검색상태 취소
         this.search_status = false;
         
-        this.snackbar = true;
-        this.snackbarMessage = "전체 공지사항으로 조회되었습니다."
+        this.$toast.success("전체 공지사항으로 조회되었습니다.");
 
+        this.searchOption = option;
         return;
       }
 
@@ -706,6 +691,16 @@ async deleteAll(){
 
     // 검색 버튼 메서드(현재 버튼)
     async searchBtn(n){
+
+      if(this.searchOption === "기본 옵션"){
+        this.$toast.error("검색 옵션을 선택해주세요.");
+        return;
+      }
+
+      if(this.searchOption === "전체"){
+        this.$toast.error("검색 옵션을 선택해주세요.");
+        return;
+      }
 
       // 옵션 데이터 전달
       const searchOption = {
@@ -726,8 +721,7 @@ async deleteAll(){
         this.totalButton = Math.ceil(response.data / 10) 
       
       } catch(error){
-        this.snackbar = true;
-        this.snackbarMessage = "서버에 에러가 발생했습니다.";
+        this.$toast.error("서버에 에러가 발생했습니다.");
         return;
       }
 
@@ -745,15 +739,13 @@ async deleteAll(){
         const response = await this.$axios.post("/api/notice/searchNotice", searchOption2)
         this.notices = response.data;
         
-        this.snackbar = true;
-        this.snackbarMessage = `검색되었습니다.`
+        this.$toast.success('검색되었습니다.');
 
         // 현재 검색상태 
         this.search_status = true;
         console.log()
       }catch(error){
-        this.snackbar = true;
-        this.snackbarMessage = "서버에 에러가 발생했습니다.";
+        this.$toast.error("서버에 에러가 발생했습니다.");
         return;
       }
     },

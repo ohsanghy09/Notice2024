@@ -1,9 +1,7 @@
 package kr.ac.kopo.springboot_notice.controller;
 
-import kr.ac.kopo.springboot_notice.dto.NoticeDTO;
 import kr.ac.kopo.springboot_notice.dto.SearchDTO;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
-import kr.ac.kopo.springboot_notice.repository.NoticeRepository;
 import kr.ac.kopo.springboot_notice.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,11 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/notice")
-
+@CrossOrigin(origins = "http://localhost:3000")
 public class NoticeController {
 
     @Autowired
@@ -83,6 +80,7 @@ public class NoticeController {
         );
         return ResponseEntity.ok(notices);
     }
+
 
 
 
