@@ -45,7 +45,7 @@ public class UserController {
         }
     }
 
-
+    // 회원가입
     @PostMapping("/AddUser")
     public ResponseEntity<String> addUser(@RequestBody UserDTO userDTO){
 

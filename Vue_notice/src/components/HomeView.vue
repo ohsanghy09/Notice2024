@@ -257,6 +257,14 @@
         // 공지사항 페이지로 리다이렉트
       this.$router.push('/Notice');
       }
+    },
+
+    created(){
+      if(localStorage.getItem("first")){
+        this.$toast.success("로그인에 성공하였습니다.");
+        localStorage.removeItem("first");
+        return;
+      }
     }
   };
   </script>
