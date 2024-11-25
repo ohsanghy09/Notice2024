@@ -8,4 +8,6 @@ public interface JwtService {
 
     // 토큰 검증 및 데이터베이스 확인
     boolean validateTokenWithDatabase(String token);
+
+
 }

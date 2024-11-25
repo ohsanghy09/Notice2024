@@ -80,23 +80,30 @@
 
           // http 통신
           try{
-
+  
             // 회원탈퇴 (http 통신)
             this.response = await this.$axios.post("/api/user/RemoveUser", UserId);
 
-            // 통신 후 입력 아이디가 데이터베이스에 존재하지 않을 경우
-            if(this.response.status === 204){
-              this.$toast.error(this.response.data.message);
+            console.log(this.response)
+
+            // // 통신 후 입력 아이디가 데이터베이스에 존재하지 않을 경우
+            if(this.response.status !== 200){
+              this.$toast.error("해당 아이디가 존재하지 않습니다.");
               return;
             }
 
             // 통신 후 입력 아이디가 데이터베이스에 존재할 경우
 
             // 회원탈퇴 메시지 출력
-            this.$toast.success(this.response.data.message);
+            this.$toast.info(this.response.data.message);
 
             // 로컬스토리지 내역 삭제
-            localStorage.clear()
+            localStorage.clear();
+
+            alert("회원탈퇴가 완료되어 로그인 화면으로 이동합니다.");
+
+            this.$router.push("/Login");
+            
 
           }
           // http 통신 에러 핸들링
@@ -116,9 +123,9 @@
 
       // 취소버튼 클릭 메서드
       cancel() {
-        if (confirm("로그인 화면으로 이동하시겠습니까?")) {
+        if (confirm("홈 화면으로 이동하시겠습니까?")) {
         // 확인(OK) 버튼을 눌렀을 때
-        this.$router.push("/Login");
+        this.$router.push("/home");
         }
       },
     },

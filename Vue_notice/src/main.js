@@ -5,6 +5,10 @@ import vuetify from './plugins/vuetify';
 import axios from 'axios';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import Navigation from '@/components/NavigationComponent.vue'
+
+Vue.component('NavigationComponent', Navigation);
+
 
 Vue.config.productionTip = false
 

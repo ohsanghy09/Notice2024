@@ -10,4 +10,7 @@ public interface UserService {
     // user 저장
     void saveUser(UserDTO userDTO);
 
+    // user 삭제
+    void deleteUserById(String userId);
+
 }

@@ -1,5 +1,6 @@
 package kr.ac.kopo.springboot_notice.service;
 
+import jakarta.transaction.Transactional;
 import kr.ac.kopo.springboot_notice.dto.UserDTO;
 import kr.ac.kopo.springboot_notice.entity.UserEntity;
 import kr.ac.kopo.springboot_notice.repository.UserRepository;
@@ -38,4 +39,11 @@ class UserServiceImpl implements UserService{
 
     }
 
-}
+    // 유저 삭제
+    @Override
+    @Transactional // 트랜잭션 활성화
+    public void deleteUserById(String userId) {
+        userRepository.deleteByUserId(userId); // JPA 메서드를 통해 삭제
+    }
+
+} // main

@@ -13,4 +13,6 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     // userId와 password로 존재 여부 확인
     boolean existsByUserIdAndPassword(String userId, String password);
+
+    void deleteByUserId(String userId); // userId로 데이터 삭제
 }

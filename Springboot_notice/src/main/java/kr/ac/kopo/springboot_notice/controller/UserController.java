@@ -53,5 +53,29 @@ public class UserController {
         return ResponseEntity.ok("회원가입에 성공하였습니다.");
     }
 
+    // 회원 탈퇴
+    @PostMapping("/RemoveUser")
+    public ResponseEntity<Map<String, Object>> deleteUser(@RequestBody UserDTO userDTO) {
+
+        // 데이터베이스에서 아이디 존재 여부 확인
+        boolean exists = userService.checkIfUserExists(userDTO.getUserId());
+
+        // response data 정의 객체 선언(response)
+        Map<String, Object> response = new HashMap<>();
+
+        // 해당 아이디가 존재한다면
+        if(exists){
+            userService.deleteUserById(userDTO.getUserId());
+            response.put("message", "해당 아이디가 삭제되었습니다.");
+            return ResponseEntity.ok(response);
+        }
+        // 해당 아이디가 존재하지 않는다면
+        else {
+            response.put("message", "해당 아이디가 존재하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 No Content
+        }
+
+    }
+
 
 } // main

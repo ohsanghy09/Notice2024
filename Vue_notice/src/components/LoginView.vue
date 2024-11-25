@@ -60,12 +60,13 @@
             회원가입
           </v-btn>
           <v-btn
-            color="error"
+            color="grey"
             block
+            class="mb-4"
             style="font-size: 18px; padding: 12px;"
-            @click="withdraw"
+            @click="guest"
           >
-            회원 탈퇴
+            게스트 로그인
           </v-btn>
       </v-card>
     </v-container>
@@ -145,15 +146,14 @@
 
       },
 
+      // 회원가입 메서드
       signUp() {
-        console.log('회원가입 클릭!');
         this.$router.push('/AddMember');
-        // 회원가입 로직 추가
       },
-      withdraw() {
-        console.log('회원 탈퇴 클릭!');
-        this.$router.push('/RemoveMember');
-        // 회원 탈퇴 로직 추가
+      // 게스트 로그인 메서드
+      guest() {
+        this.$router.push('/Home');
+
       },
     },
 

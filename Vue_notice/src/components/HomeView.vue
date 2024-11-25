@@ -1,17 +1,15 @@
 <template>
     <v-container fluid>
+
+      <NavigationComponent />
+
       <!-- 전체를 수직 중앙 정렬 -->
       <v-row align="center" justify="center" style="min-height: 100vh">
         
         <v-col cols="12">
           <v-row class="align-center">
-            <!-- 버튼을 왼쪽에 추가 -->
-            <v-col cols="5" justify="start">
-              <v-btn color="secondary" @click="NoticeClick" x-large>공지사항</v-btn>
-            </v-col>
-  
             <!-- 상단 큰 문구 -->
-            <v-col cols="auto" justify="center" class="text-center">
+            <v-col justify="center" class="text-center">
               <h1>풍경 갤러리</h1>
             </v-col>
           </v-row>
@@ -73,9 +71,16 @@
   </template>
   
   <script>
+
+
+
   export default {
     data() {
       return {
+        // 네비게이션 컴포넌트 이식
+        names : ['NavigationComponent',],
+
+
         showImageList: false,  // 버튼 클릭 시 이미지가 나타남
         selectedImage: null,  // 선택된 이미지를 저장
         images: [],  // 이미지와 제목 데이터를 배열로 관리, 처음에는 빈 배열로 시작
@@ -260,6 +265,7 @@
     },
 
     created(){
+      // 로그인 안내 문구 출력
       if(localStorage.getItem("first")){
         this.$toast.success("로그인에 성공하였습니다.");
         localStorage.removeItem("first");
