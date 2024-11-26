@@ -128,6 +128,9 @@
         // 로그인 후 메인 페이지로 이동할 것이기 때문에 로컬스토리지에 처음 로그인 저장
         localStorage.setItem('first', "first");
 
+        // 로그인 후 아이디 값 로컬스터토리지에 저장
+        localStorage.setItem('userId', this.response.data.userId);
+
         // 홈페이지로 이동
         this.$router.push('/home');
       }

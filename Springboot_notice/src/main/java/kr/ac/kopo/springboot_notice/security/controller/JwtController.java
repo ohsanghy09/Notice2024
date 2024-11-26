@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/security")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -21,7 +24,7 @@ public class JwtController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserDTO userDTO) {
         try {
             // Vue에서 받은 DTO 아이디를 검증 및 토큰 생성 serviceImpl로 이동, 사용자 검증 후 JwtUtil에서 토큰 생성하여 return
             String token = jwtService.authenticateAndGenerateToken(userDTO.getUserId(), userDTO.getPassword());
@@ -30,8 +33,12 @@ public class JwtController {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
 
+            // 응답 바디 데이터 생성
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("userId", userDTO.getUserId());    // 사용자 입력값이 검증됐으므로 사용.
+
             // HTTP 헤더와 status 200 전송
-            return new ResponseEntity<>(headers, HttpStatus.OK); // 헤더만 포함한 응답 반환
+            return new ResponseEntity<>(responseBody, headers, HttpStatus.OK);
         }
         // 없으면 에러 발생
         catch (Exception e) {
