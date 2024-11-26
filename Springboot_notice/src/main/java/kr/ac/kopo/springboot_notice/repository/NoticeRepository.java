@@ -1,9 +1,11 @@
 package kr.ac.kopo.springboot_notice.repository;
 
+import jakarta.transaction.Transactional;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -39,6 +41,13 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
     // 내용에 특정 문자열이 포함된 공지사항을 검색하고, 페이지네이션과 정렬을 적용
     List<NoticeEntity> findByContentContaining(String content, Pageable pageable);
+
+    // 특정 유저 아이디(writer)로 데이터 테이블 삭제
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM NoticeEntity n WHERE n.writer = :writer")
+    void deleteByWriter(@Param("writer") String writer);
+
 
 
 }

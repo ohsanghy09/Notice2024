@@ -19,6 +19,9 @@ public interface NoticeService {
     // 공지사항 내용 전체 삭제
     void deleteNoticeAll();
 
+    // 공지사항 내용 전체 삭제 (writer 값을 기준)
+    void deleteRecordsByWriter(String writer);
+
     // 전체 데이터 개수 조회
     long getNoticeCount();
 

@@ -42,9 +42,15 @@ public class NoticeController {
     }
 
     // 공지사항 전체 삭제
-    @DeleteMapping("/deleteAll")
-    public void deleteNoticeAll() {
-        noticeService.deleteNoticeAll();
+    @PostMapping("/deleteAll")
+    public ResponseEntity<Void> deleteNoticesByWriter(@RequestBody Map<String, String> request) {
+        String writer = request.get("writer"); // 요청 본문에서 작성자(writer) 가져오기
+        try {
+            noticeService.deleteRecordsByWriter(writer);
+            return ResponseEntity.noContent().build(); // 204 No Content 반환
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 오류 시 500 반환
+        }
     }
 
     // 공지사항 개수 반환

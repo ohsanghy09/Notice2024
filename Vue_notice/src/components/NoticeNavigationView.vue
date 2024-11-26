@@ -35,7 +35,7 @@
         <v-card-title class="headline primary--text">공지사항 추가</v-card-title>
         <v-card-text>
           <v-text-field v-model="add_title" label="제목" outlined></v-text-field>
-          <v-text-field v-model="add_writer" label="작성자" outlined></v-text-field>
+          <v-text-field readonly v-model="add_writer" label="작성자" outlined></v-text-field>
           <v-textarea v-model="add_content" label="내용" outlined></v-textarea>
         </v-card-text>
         <v-card-actions>
@@ -343,7 +343,7 @@ export default {
       this.add_dialog = true;
       this.add_title = '';
       this.add_content = '';
-      this.add_writer = '';
+      this.add_writer = localStorage.getItem("userId");
     },
 
     // 공지사항 추가 메서드
@@ -424,6 +424,11 @@ export default {
         this.$toast.info("이전 공지사항 목록에서 수정할 공지사항을 선택해주세요.");
         return;
       }
+
+      if(this.select_writer !== localStorage.getItem('userId')){
+      this.$toast.error("작성자만 수정할 수 있습니다.");
+      return;
+    }
       
       // 수정 다이얼로그 열기
       this.update_dialog = true;
@@ -438,6 +443,7 @@ export default {
 
     //공지사항 수정 메서드
     async updateNotice() {
+
 
     // 입력 조건(공백 제거)
     if (!this.update_title.trim()){
@@ -482,6 +488,9 @@ try{
   // 성공하면 목록 초기화
   await this.getByNotice(1);
 
+  // 가장 최근 공지사항 초기화
+  await this.recentNotice();
+
   // 추가 안내문구 출력
   this.$toast.success("공지사항이 수정되었습니다.");
 
@@ -508,6 +517,12 @@ this.delete_id = this.select_id
 // 현재 선택한 공지사항이 없이 삭제하려는 경우
 if(!this.delete_id){
   this.$toast.info("이전 공지사항 목록에서 삭제할 공지사항을 선택해주세요.");
+  return;
+}
+
+// 현재 작성자가 다른 작성자의 공지사항을 삭제하려는 경우
+else if(this.select_writer !== localStorage.getItem("userId")){
+  this.$toast.error("작성자만 삭제할 수 있습니다.");
   return;
 }
 
@@ -556,7 +571,13 @@ this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시�
 
 // 전체 삭제
 async deleteAll(){
-    await this.$axios.delete('/api/notice/deleteAll')
+
+  // 데이터 변환
+  const USER = {
+    writer : localStorage.getItem('userId')
+  }
+
+    await this.$axios.post('/api/notice/deleteAll', USER)
     await this.getByNotice(1);
     this.$toast.success("공지사항 목록이 전체 삭제 되었습니다.");
     // 현재 선택한 공지사항 삭제

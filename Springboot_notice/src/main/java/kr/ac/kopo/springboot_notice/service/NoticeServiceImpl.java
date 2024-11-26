@@ -65,6 +65,12 @@ public class NoticeServiceImpl implements NoticeService{
         noticeRepository.deleteAll();
     }
 
+    // 공지사항을 writer를 기준으로 전체 삭제
+    @Override
+    public void deleteRecordsByWriter(String writer) {
+        noticeRepository.deleteByWriter(writer);
+    }
+
     @Override
     public long getNoticeCount(){
         return noticeRepository.countNotice();
