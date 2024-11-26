@@ -8,6 +8,7 @@ import AddMember from '@/components/AddMemberView.vue'
 import RemoveMember from '@/components/RemoveMemberView.vue';
 import Login from '@/components/LoginView.vue'
 import Navigation from '@/components/NavigationComponent.vue'
+import Logout from '@/components/LogoutView.vue'
 
 
 Vue.use(Router);
@@ -49,6 +50,11 @@ export default new Router({
       path: '/Navigation',
       name: 'Navigation',
       component: Navigation
+    },
+    {
+      path: '/Logout',
+      name: 'Logout',
+      component: Logout
     }
   ]
 });

@@ -69,6 +69,7 @@
 
       // 회원탈퇴 메서드
       async RemoveMember() {
+        if(confirm("회원탈퇴 하시겠습니까?")){
         
         // 아이디 입력값 형식이 유효할 경우
         if(this.rules.required(this.userId) === true && this.rules.minLength(this.userId) === true){
@@ -116,6 +117,7 @@
         else{
           this.$toast.error("올바른 아이디 형식으로 입력해주세요.");
         }
+      }
       },
 
 

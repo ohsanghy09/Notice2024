@@ -27,6 +27,7 @@ public class JwtUtil {
 
     // JWT 검증
     public Claims validateToken(String token) {
+        System.out.println(token);
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY) // 서명 검증
                 .parseClaimsJws(token)

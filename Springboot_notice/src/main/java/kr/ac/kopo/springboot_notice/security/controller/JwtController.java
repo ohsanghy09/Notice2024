@@ -41,25 +41,27 @@ public class JwtController {
     }
 
     // 토큰 검증
-    @GetMapping("/validate")
+    @PostMapping("/validate")
     public ResponseEntity<String> validate(@RequestHeader("Authorization") String token) {
+        System.out.println(token);
         try {
 
             // Vue에서 받은 토큰 값을 추출 후 토큰 검증 serviceImpl로 이동, Util로 이동하여 해시값 해소 후 return, serviceImpl에서 해소된 해시값으로 사용자 인증 후 boolean 값 return
             boolean isValid = jwtService.validateTokenWithDatabase(token.replace("Bearer ", ""));
 
+            System.out.println(isValid);
             // 해소된 해시값으로 사용자 인증을 완료 했을 경우
             if (isValid) {
-                return ResponseEntity.ok("Token is valid");
+                return ResponseEntity.ok("사용자 인증이 완료되었습니다.");
             }
-            // 해시된 해소값으로 사용자 인증이 되지 않았을 경우 (status 204)
+            // 해당 토큰이 발행되지 않았을 경우 (status 204)
             else {
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
             }
         }
-        // 헤더로 토큰값이 오지 않았을 경우
+        // 토큰 인증이 되지 않았을 경우
         catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid token");
+            return ResponseEntity.status(401).body("비활성화된 사용자 인증입니다. 다시 로그인 해주세요.");
         }
     }
 

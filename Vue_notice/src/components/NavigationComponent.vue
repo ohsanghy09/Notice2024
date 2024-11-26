@@ -62,22 +62,17 @@
       },
 
       // 메뉴 버튼 메서드
-      MenuBtn(){
+      async MenuBtn(){
         // 토큰이 있어야만 해당 서비스 사용할 수 있음. (해당 토큰 검증 필요)
-        if(localStorage.getItem("token")){
+        
+        // 토큰 검증 함수 실행 
+        const check = await this.$checkToken();
 
-            const token = localStorage.getItem('token');
-            console.log(token);
-
-            this.drawer = !this.drawer;
-            return;
+        if(check){
+          this.drawer = !this.drawer;
+          return;
         }
-
-        // 경고창
-        if (confirm("해당 서비스를 이용하기 위해서는 로그인이 필요합니다.\n로그인 화면으로 이동하시겠습니까?")) {
-            // 확인(OK) 버튼을 눌렀을 때
-            this.$router.push("/Login");
-        }
+        
       }
     },
   };
