@@ -12,6 +12,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
+
     private final Key SECRET_KEY = Keys.hmacShaKeyFor("a8$7hA!nfsw90kq2mv@3h1jsd%8!js3lk&2#7ksdjh@qw".getBytes()); // 서명 키
     private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1시간
 

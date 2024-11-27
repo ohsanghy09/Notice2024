@@ -5,6 +5,7 @@ import kr.ac.kopo.springboot_notice.dto.UserDTO;
 import kr.ac.kopo.springboot_notice.entity.UserEntity;
 import kr.ac.kopo.springboot_notice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -15,6 +16,9 @@ class UserServiceImpl implements UserService{
     // repository 객체 생성
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     // 아이디 중복 확인
     @Override
@@ -31,7 +35,7 @@ class UserServiceImpl implements UserService{
 
         // DTO 객체 데이터 Entity에 저장
         userEntity.setUserId(userDTO.getUserId());
-        userEntity.setPassword(userDTO.getPassword());
+        userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
         // JPA를 통해 데이터베이스에 저장
         userRepository.save(userEntity);

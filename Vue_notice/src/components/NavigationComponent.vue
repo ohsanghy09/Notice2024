@@ -43,8 +43,8 @@
         }
 
         // 게시판으로 라우팅
-        if(page === "Board"){
-            this.$router.push('/Board');
+        if(page === "NoticeBoard"){
+            this.$router.push('/NoticeBoard');
         }
 
         // 로그아웃 창으로 라우팅

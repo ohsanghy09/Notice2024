@@ -4,10 +4,13 @@ package kr.ac.kopo.springboot_notice.repository;
 import kr.ac.kopo.springboot_notice.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 
     // 데이터베이스에 해당 아이디 여부 확인
     boolean existsByUserId(String userId); // 메서드 기반 조회
+    Optional<UserEntity> findByUserId(String userId);
 
     // 기본 CRUD 메서드 제공 (save, findById 등)
 

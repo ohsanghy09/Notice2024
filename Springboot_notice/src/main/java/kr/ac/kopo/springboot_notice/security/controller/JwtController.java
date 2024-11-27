@@ -4,6 +4,7 @@ package kr.ac.kopo.springboot_notice.security.controller;
 import kr.ac.kopo.springboot_notice.dto.UserDTO;
 import kr.ac.kopo.springboot_notice.security.service.JwtService;
 import kr.ac.kopo.springboot_notice.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/security")
 @CrossOrigin(origins = "http://localhost:3000")
+@Log4j2
 public class JwtController {
 
     // JWT service 객체 생성
@@ -68,6 +70,7 @@ public class JwtController {
         }
         // 토큰 인증이 되지 않았을 경우
         catch (Exception e) {
+            log.info(e);
             return ResponseEntity.status(401).body("비활성화된 사용자 인증입니다. 다시 로그인 해주세요.");
         }
     }

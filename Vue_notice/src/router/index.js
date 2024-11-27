@@ -9,6 +9,7 @@ import RemoveMember from '@/components/RemoveMemberView.vue';
 import Login from '@/components/LoginView.vue'
 import Navigation from '@/components/NavigationComponent.vue'
 import Logout from '@/components/LogoutView.vue'
+import NoticeBoard from '@/components/NoticeBoardView.vue'
 
 
 Vue.use(Router);
@@ -55,6 +56,11 @@ export default new Router({
       path: '/Logout',
       name: 'Logout',
       component: Logout
+    },
+    {
+      path: '/NoticeBoard',
+      name: 'NoticeBoard',
+      component: NoticeBoard
     }
   ]
 });
