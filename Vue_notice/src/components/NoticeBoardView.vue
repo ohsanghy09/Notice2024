@@ -219,15 +219,38 @@
                 </v-list-item-subtitle>
               </v-list-item-content>
               <!-- 특정 작성자일 때만 버튼 표시 -->
-              <v-btn
-                v-if="comment.userId === specialUserId"
-                small
-                icon
-                color="primary"
-                @click="handleButtonClick(comment)"
-              >
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
+              <div>
+                  <v-menu
+                    offset-y
+                    transition="scale-transition"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        icon
+                        v-if="comment.userId === specialUserId"
+                        class="no-border"
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        <v-icon>mdi-dots-vertical</v-icon>
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="updateComment(comment)">
+                        <v-list-item-icon>
+                          <v-icon>mdi-flag</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>수정</v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="deleteComment(comment)">
+                        <v-list-item-icon>
+                          <v-icon>mdi-flag</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-title>삭제</v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
             </v-list-item>
           </v-list>
         </v-card-text>
@@ -252,6 +275,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- 댓글 수정, 삭제 필드 -->
 
       <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
       <v-row justify="center" align="center" class="mt-4">
@@ -902,7 +927,18 @@ async deleteAll(){
       catch(error){
         this.$toast.error("서버와 통신이 불안정합니다. 다시 시도해주세요.");
       }
+    },
+
+    updateComment(comment){
+      console.log(comment);
+      console.log("업데이트 클릭");
+    },
+
+    deleteComment(comment){
+      console.log(comment);
+      console.log("delete 클릭");
     }
+
 
 
 
@@ -1036,5 +1072,8 @@ async deleteAll(){
 .v-card-actions {
   border-top: 1px solid #eee; /* 댓글 입력창 상단 구분선 */
   padding: 10px;
+}.no-border {
+  border: none !important; /* 테두리 제거 */
+  box-shadow: none !important; /* 박스 그림자 제거 */
 }
 </style>
