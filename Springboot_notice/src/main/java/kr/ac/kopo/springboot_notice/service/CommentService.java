@@ -13,4 +13,10 @@ public interface CommentService {
     // 댓글 조회
     List<CommentDTO> getComments(String noticeId, String userId);
 
+    // 댓글 수정
+    void updateComment(CommentDTO commentDTO);
+
+    // 댓글 삭제
+    void deleteComment(CommentDTO commentDTO);
+
 }

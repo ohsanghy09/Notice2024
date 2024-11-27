@@ -2,6 +2,7 @@ package kr.ac.kopo.springboot_notice.service;
 
 import kr.ac.kopo.springboot_notice.dto.CommentDTO;
 import kr.ac.kopo.springboot_notice.entity.CommentEntity;
+import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import kr.ac.kopo.springboot_notice.repository.CommentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,30 @@ public class CommentServiceImpl implements CommentService{
 
 
         return commentDTOs;
+    }
+
+    @Override
+    public void updateComment(CommentDTO commentDTO){
+
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentDTO.getId());
+
+
+        CommentEntity Comment = optionalComment.get();
+        // 댓글 내용 업데이트
+        Comment.setContent(commentDTO.getContent());
+        commentRepository.save(Comment); // 업데이트 후 저장
+    }
+
+    @Override
+    public void deleteComment(CommentDTO commentDTO) {
+
+        // ID로 댓글이 존재하는지 확인
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentDTO.getId());
+
+
+        CommentEntity Comment = optionalComment.get();
+        // 댓글 삭제
+        commentRepository.deleteById(Comment.getId());
     }
 
 

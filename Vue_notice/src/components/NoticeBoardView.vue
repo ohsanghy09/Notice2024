@@ -863,8 +863,8 @@ async deleteAll(){
     // 댓글 버튼 클릭
     async commentBtn(notice){
 
-      // 해당 게시판 id 가져오기
-      this.select_id = notice.id;
+      // 해당 게시판 id 선택
+      this.selectNotice(notice);
 
       // 댓글 조회 메서드
       await this.getComment();
@@ -982,19 +982,71 @@ async deleteAll(){
         return;
       }
 
+      // 데이터 변환
       const UPDATEDATA = {
-        id : this.comment_id,
-        noticeId : this.select_id,
-        content : this.update_comment
+        id : this.comment_id, // 댓글 아이디
+        noticeId : this.select_id,  // 게시판 아이디
+        content : this.update_comment // 수정 내용
       }
       
-      console.log(UPDATEDATA)
+      // http 통신
+      try{
+
+        // 댓글 수정 (http 통신)
+        await this.$axios.post("/api/comment/update", UPDATEDATA)
+      
+
+        // 댓글 최신화(조회 메서드)
+        await this.getComment();
+
+        // 안내 문구
+        this.$toast.info("댓글이 수정되었습니다.");
+
+        // 다이얼로그 종료
+        this.update_comment_dialog = false;
+
+      }
+      // http 에러 핸들링
+      catch(error){
+        this.$toast.error("서버와 통신이 불안정합니다. 다시 시도해주세요.");
+      }
 
     },
 
-    deleteComment(comment){
-      console.log(comment);
-      console.log("delete 클릭");
+   async deleteComment(comment){
+      
+    // 현재 댓글 아이디 데이터 저장
+    this.comment_id = comment.id;
+
+    // 데이터 변환
+      const deleteData = {
+        id : this.comment_id,
+        noticeId : this.select_id
+      }
+      
+      // http 통신
+      try{
+
+        // 댓글 삭제 (http 통신)
+        await this.$axios.post("/api/comment/delete", deleteData)
+      
+
+        // 댓글 최신화(조회 메서드)
+        await this.getComment();
+
+        // 안내 문구
+        this.$toast.info("댓글이 삭제되었습니다.");
+
+        // 다이얼로그 종료
+        this.update_comment_dialog = false;
+
+      }
+      // http 에러 핸들링
+      catch(error){
+        this.$toast.error("서버와 통신이 불안정합니다. 다시 시도해주세요.");
+      }
+      
+
     }
 
 

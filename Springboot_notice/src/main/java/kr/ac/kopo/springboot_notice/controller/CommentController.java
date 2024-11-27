@@ -40,5 +40,17 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
+    // 댓글 수정
+    @PostMapping("/update")
+    public ResponseEntity<String> updateComment(@RequestBody CommentDTO commentDTO) {
+        commentService.updateComment(commentDTO); // Service 호출
+        return ResponseEntity.ok("댓글이 성공적으로 수정되었습니다.");
+    }
 
+    // 댓글 삭제
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteComment(@RequestBody CommentDTO commentDTO){
+        commentService.deleteComment(commentDTO);
+        return ResponseEntity.ok("댓글이 성공적으로 삭제되었습니다.");
+    }
 }
