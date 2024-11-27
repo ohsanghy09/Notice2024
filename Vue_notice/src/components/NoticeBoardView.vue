@@ -185,6 +185,7 @@
             large
             icon
             color="primary" 
+            class="no-border"
             @click.stop="commentBtn(notice)"
           >
           <v-icon>mdi-chat-processing-outline</v-icon>
@@ -238,13 +239,13 @@
                     <v-list>
                       <v-list-item @click="updateComment(comment)">
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>mdi-pencil</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title>수정</v-list-item-title>
                       </v-list-item>
                       <v-list-item @click="deleteComment(comment)">
                         <v-list-item-icon>
-                          <v-icon>mdi-flag</v-icon>
+                          <v-icon>mdi-delete</v-icon>
                         </v-list-item-icon>
                         <v-list-item-title>삭제</v-list-item-title>
                       </v-list-item>
@@ -276,7 +277,31 @@
       </v-card>
     </v-dialog>
 
-    <!-- 댓글 수정, 삭제 필드 -->
+    <!-- 댓글 수정 다이얼로그 -->
+    <v-dialog v-model="update_comment_dialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          텍스트 입력
+        </v-card-title>
+
+        <v-card-text>
+          <!-- 텍스트 필드 -->
+          <v-text-field
+            v-model="update_comment"
+            label="입력하세요"
+            @keyup.enter="updatecomment"
+          ></v-text-field>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <!-- 제출 버튼 -->
+          <v-btn text color="green" @click="updatecomment">수정</v-btn>
+          <!-- 취소 버튼 -->
+          <v-btn text color="red" @click="update_comment_dialog = false">닫기</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
       <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
       <v-row justify="center" align="center" class="mt-4">
@@ -386,6 +411,11 @@ export default {
       comments: [], // 댓글 목록
 
       specialUserId : '', // 댓글에서 본인 구분 변수
+
+      comment_id : '', // 현재 댓글 변수
+
+      update_comment_dialog : false, // 업데이트 필드 다이얼로그 변수
+      update_comment : ''   // 업데이트 내용
       
     }
   },
@@ -834,7 +864,7 @@ async deleteAll(){
     async commentBtn(notice){
 
       // 해당 게시판 id 가져오기
-      await this.selectNotice(notice);
+      this.select_id = notice.id;
 
       // 댓글 조회 메서드
       await this.getComment();
@@ -845,12 +875,13 @@ async deleteAll(){
       // 댓글 다이얼로그 실행
       this.comment_dialog = true;
 
-      // 댓글 내용 초기화
-      this.comment_content = '';
-
       // 텍스트 필드 포커싱
       await this.getFocus();
 
+      // 댓글 내용 초기화
+      this.comment_content = '';
+
+      
     },
 
 
@@ -929,9 +960,36 @@ async deleteAll(){
       }
     },
 
+    // 수정 버튼 메서드
     updateComment(comment){
-      console.log(comment);
-      console.log("업데이트 클릭");
+      
+      // 현재 댓글 아이디 데이터 저장
+      this.comment_id = comment.id;
+
+      // 수정 다이얼로그 열기
+      this.update_comment_dialog = true;
+
+      // 현재 입력창에 수정할 내용 파싱
+      this.update_comment = comment.content;
+
+    },
+    // 수정 메서드
+    async updatecomment(){
+      
+      // 댓글 입력 형식
+      if(!this.update_comment.trim()){
+        this.$toast.error("수정할 댓글을 입력해주세요.");
+        return;
+      }
+
+      const UPDATEDATA = {
+        id : this.comment_id,
+        noticeId : this.select_id,
+        content : this.update_comment
+      }
+      
+      console.log(UPDATEDATA)
+
     },
 
     deleteComment(comment){
