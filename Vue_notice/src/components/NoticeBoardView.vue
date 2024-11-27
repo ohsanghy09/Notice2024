@@ -63,11 +63,6 @@
       </v-card>
     </v-dialog>
 
-    <!-- 스낵바: 알림 메시지 표시 -->
-    <v-snackbar v-model="snackbar" :timeout="snackbarTimeout" top>
-      {{ snackbarMessage }}
-    </v-snackbar>
-
     <!-- 로딩 다이얼로그 -->
     <v-dialog v-model="isLoading" persistent hide-overlay width="300">
       <v-card color="#FFC107" dark class="rounded-xl">
@@ -186,8 +181,41 @@
             </v-list-item-title>
             <v-list-item-subtitle>{{ notice.writer }}</v-list-item-subtitle>
           </v-list-item-content>
+          <v-btn 
+            large
+            icon
+            color="primary" 
+            @click.stop="commentBtn(notice)"
+          >
+          <v-icon>mdi-chat-processing-outline</v-icon>
+          </v-btn>
         </v-list-item>
       </v-list>
+
+      <!-- 댓글 다이얼 로그 -->
+      <v-dialog v-model="comment_dialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">댓글 작성</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field
+            v-model="comment_content"
+            label="댓글 내용을 입력하세요"
+            outlined
+          ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="saveComment">
+            제출
+          </v-btn>
+          <v-btn color="red darken-1" text @click="closeComment">
+            취소
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
       <!-- 페이지네이션 버튼들을 중앙으로 배치 -->
       <v-row justify="center" align="center" class="mt-4">
@@ -233,11 +261,6 @@
 export default {
   data(){
     return {
-      // 스낵바 설정
-      snackbar: false, // 스낵바 표시 여부
-      snackbarMessage: '',
-      snackbarTimeout: 4000, // 스낵바 표시 시간
-
       isLoading: false, // 로딩 다이얼로그 상태
       isLoadingMessage: '', // 로딩 메시지
 
@@ -276,13 +299,6 @@ export default {
 
       // 게시판 삭제 관련 변수
       delete_id: '',
-
-      // 가장 최근 등록된 게시판 관련 변수
-      recent_id: '',
-      recent_title: '',
-      recent_writer: '',
-      recent_content: '',
-      recent_time: '',
       
 
       current_button_Page: 1, // 현재 버튼 페이지
@@ -301,6 +317,10 @@ export default {
 
       search_status:false, // 현재 검색 상태
 
+      // 댓글 관련 변수
+      comment_dialog : false, // 현재 다이얼로그
+      
+      comment_content : '', // 댓글 내용 
       
     }
   },
@@ -327,11 +347,11 @@ export default {
 
       // 입력 조건(공백 제거)
       if (!this.add_title.trim()){
-        this.toast.error("제목을 입력해주세요.")
+        this.$childrentoast.error("제목을 입력해주세요.")
         return;
       }
       if (!this.add_content.trim()){
-        this.toast.error("내용을 입력해주세요.")
+        this.$toast.error("내용을 입력해주세요.")
         return;
       }
 
@@ -388,6 +408,7 @@ export default {
       this.select_writer = notice.writer;
       this.select_content = notice.content;
       this.select_time = notice.time;
+      console.log(this.select_id)
     },
 
     // 수정 버튼을 클릭하면 나타나는 메서드(수정 다이얼로그 출력)
@@ -459,9 +480,6 @@ try{
 
   // 성공하면 목록 초기화
   await this.getByNotice(1);
-
-  // 가장 최근 게시판 초기화
-  await this.recentNotice();
 
   // 추가 안내문구 출력
   this.$toast.success("게시판이 수정되었습니다.");
@@ -544,40 +562,25 @@ this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시�
 // 전체 삭제
 async deleteAll(){
 
-  // 데이터 변환
-  const USER = {
-    writer : localStorage.getItem('userId')
+  const user = localStorage.getItem('userId');
+
+  if(confirm(`${user}님께서 만든 게시판 내용들을 전체 삭제 하시겠습니까?`)){
+      // 데이터 변환
+      const USER = {
+          writer : user
+        }
+
+          await this.$axios.post('/api/board/deleteAll', USER)
+          await this.getByNotice(1);
+          this.$toast.success("게시판 목록이 전체 삭제 되었습니다.");
+          
+          // 현재 선택한 게시판 삭제
+          this.select_id = ''
   }
 
-    await this.$axios.post('/api/board/deleteAll', USER)
-    await this.getByNotice(1);
-    this.$toast.success("게시판 목록이 전체 삭제 되었습니다.");
-    // 현재 선택한 게시판 삭제
-    this.select_id = ''
+  
 
   },
-  // 가장 최근 등록된 게시판 관련 메서드
-  async recentNotice(){
-
-    if (this.notices.length === 0){
-    this.recent_id = '';
-    this.recent_title = '';
-    this.recent_writer = '';
-    this.recent_content = '';
-    this.recent_time = '';
-    return;
-    }
-
-    
-    this.recent_id = this.notices[0].id;
-    this.recent_title = this.notices[0].title;
-    this.recent_writer = this.notices[0].writer;
-    this.recent_content = this.notices[0].content;
-    this.recent_time = this.notices[0].time;
-
-   
-  },
-
 
     // 이전 페이지로 이동
     prevPage() {
@@ -620,7 +623,7 @@ async deleteAll(){
       // 현재 선택된 버튼 표시
       this.activeButton = n;
 
-      console.log(`현재 ${n}번 버튼입니다.`);
+      // console.log(`현재 ${n}번 버튼입니다.`);
       
       const start = (n - 1) * 10 + 1 // 게시판 페이지별 가져와야하는 처음 게시판의 인덱스
 
@@ -636,16 +639,10 @@ async deleteAll(){
       try{
         const response = await this.$axios.post('/api/board/getByStart', { start });
         this.notices = response.data
-        console.log(this.notices)
-
-        // 가장 최근 게시판 목록 조회 메서드
-        await this.recentNotice();
+        // console.log(this.notices)
 
       }catch(error){
         this.$toast.error("현재 게시판이 존재하지 않습니다. 게시판을 추가해주세요.");
-
-         // 가장 최근 게시판 목록 조회 메서드
-         await this.recentNotice();
         return;
       }
       
@@ -676,7 +673,7 @@ async deleteAll(){
       // 현재 검색 메서드 전역 변수로 저장
       this.searchOption = option;
 
-      console.log(this.searchOption)
+      // console.log(this.searchOption)
 
       
 
@@ -701,7 +698,7 @@ async deleteAll(){
         text: this.search_text
       }
 
-      console.log(searchOption)
+      // console.log(searchOption)
 
       // 현재 선택된 버튼 표시
       this.activeButton = n;
@@ -709,7 +706,7 @@ async deleteAll(){
       try{
         // 전체 게시판 개수 가져오기(옵션 전체 게시판 개수 가져오는 EndPoint)
         const response = await this.$axios.post("/api/board/searchCount", searchOption)
-        console.log(response.data)
+        // console.log(response.data)
         // 전체 게시판 개수 / 한 페이지에 표시될 게시판 개수 = 전체 버튼 개수
         this.totalButton = Math.ceil(response.data / 10) 
       
@@ -736,7 +733,6 @@ async deleteAll(){
 
         // 현재 검색상태 
         this.search_status = true;
-        console.log()
       }catch(error){
         this.$toast.error("서버에 에러가 발생했습니다.");
         return;
@@ -746,7 +742,78 @@ async deleteAll(){
     BackClick(){
       // 홈페이지로 이동
       this.$router.push('/home');
+    },
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // 댓글 버튼 클릭
+    async commentBtn(notice){
+
+      // 해당 게시판 id 가져오기
+      await this.selectNotice(notice);
+
+      // 댓글 조회 메서드 구현 필요
+
+      // 댓글 다이얼로그 실행
+      this.comment_dialog = true;
+
+      // 댓글 내용 초기화
+      this.comment_content = '';
+
+    },
+
+
+
+    // 댓글 저장 메서드
+    async saveComment(){
+      
+      // 댓글 입력 형식
+      if(!this.comment_content.trim()){
+        this.$toast.error("저장할 댓글을 입력해주세요.");
+        return;
+      }
+
+      // 현재 시간 객체 생성
+      this.generateTime();  // 다이얼로그에 공지사항 추가 버튼 클릭 시 현재 시간 객체에 바인딩
+
+      // 데이터 변환
+      const COMMENT = {
+        noticeId : this.select_id,  // 해당 게시판 아이디
+        userId : localStorage.getItem("userId"),  // 댓글을 작성한 사람의 아이디
+        content : this.comment_content, // 댓글 내용
+        time : this.now_time  // 댓글을 작성한 시간
+      }
+
+      // http 통신
+      try{
+
+        // 댓글 저장 (http 통신)
+        const response = await this.$axios.post('/api/comment/add', COMMENT);
+        console.log(response)
+        this.$toast.success(response.data);
+      }
+
+      // http 에러 핸들링
+      catch(error){
+        this.$toast.error("서버와 통신이 불안정합니다. 다시 시도해주세요.");
+      }
+    
+    },
+
+
+
+    // 댓글 다이얼로그 종료 메서드
+    async closeComment(){
+
+      // 댓글 다이얼로그 닫기
+      this.comment_dialog = false;
+
+
     }
+
+
 
 },
 

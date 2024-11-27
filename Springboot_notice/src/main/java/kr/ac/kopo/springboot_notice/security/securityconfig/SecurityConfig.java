@@ -26,7 +26,7 @@ public class SecurityConfig {
         http
                 .csrf().disable() // CSRF 비활성화 (테스트용, 필요에 따라 활성화)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/**", "api/security/**", "api/notice/**", "api/comments/**", "api/posts/**", "api/board/**").permitAll() // 공개 엔드포인트
+                        .requestMatchers("/api/user/**", "api/security/**", "api/notice/**", "api/comment/**", "api/board/**").permitAll() // 공개 엔드포인트
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
                 .cors(Customizer.withDefaults()); // CORS 설정

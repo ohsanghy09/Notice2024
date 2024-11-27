@@ -351,11 +351,11 @@ export default {
 
       // 입력 조건(공백 제거)
       if (!this.add_title.trim()){
-        this.toast.error("제목을 입력해주세요.")
+        this.$toast.error("제목을 입력해주세요.")
         return;
       }
       if (!this.add_writer.trim()){
-        this.toast.error("작성자를 입력해주세요.")
+        this.$toast.error("작성자를 입력해주세요.")
         return;
       }
       if (!this.add_content.trim()){
