@@ -6,7 +6,7 @@
           <v-list-item @click="navigate('Notice')">
             <v-list-item-title>공지사항</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="navigate('Board')">
+          <v-list-item @click="navigate('NoticeBoard')">
             <v-list-item-title>게시판</v-list-item-title>
           </v-list-item>
           <v-list-item @click="navigate('Logout')">

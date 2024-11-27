@@ -69,6 +69,14 @@
 
       // 회원탈퇴 메서드
       async RemoveMember() {
+
+
+        if(localStorage.getItem("userId") !== this.userId){
+          this.$toast.error("본인 아이디를 입력해주세요.");
+          return;
+        }
+
+
         if(confirm("회원탈퇴 하시겠습니까?")){
         
         // 아이디 입력값 형식이 유효할 경우
