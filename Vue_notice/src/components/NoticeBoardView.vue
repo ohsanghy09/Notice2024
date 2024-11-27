@@ -192,26 +192,47 @@
         </v-list-item>
       </v-list>
 
-      <!-- 댓글 다이얼 로그 -->
-      <v-dialog v-model="comment_dialog" max-width="500px">
+      <!-- 댓글 다이얼로그 -->
+    <v-dialog v-model="comment_dialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span class="headline">댓글 작성</span>
+          <span class="headline">댓글 목록</span>
         </v-card-title>
         <v-card-text>
+          <!-- 댓글 목록 -->
+          <v-list>
+            <v-list-item
+              v-for="comment in comments"
+              :key="comment.id"
+              class="comment-item"
+              style="border-bottom: 1px solid #eee;"
+            >
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ comment.content }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <strong>작성자:</strong> {{ comment.userId }} | 
+                  <strong>시간:</strong> {{ comment.time }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <!-- 댓글 추가 -->
           <v-text-field
             v-model="comment_content"
             label="댓글 내용을 입력하세요"
             outlined
+            class="mt-4"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="saveComment">
-            제출
+            댓글 추가
           </v-btn>
           <v-btn color="red darken-1" text @click="closeComment">
-            취소
+            닫기
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -321,6 +342,8 @@ export default {
       comment_dialog : false, // 현재 다이얼로그
       
       comment_content : '', // 댓글 내용 
+
+      comments: [], // 댓글 목록
       
     }
   },
@@ -755,6 +778,7 @@ async deleteAll(){
       await this.selectNotice(notice);
 
       // 댓글 조회 메서드 구현 필요
+      this.getComment();
 
       // 댓글 다이얼로그 실행
       this.comment_dialog = true;
@@ -793,6 +817,9 @@ async deleteAll(){
         const response = await this.$axios.post('/api/comment/add', COMMENT);
         console.log(response)
         this.$toast.success(response.data);
+
+        // 댓글 최신화(조회 메서드)
+        this.getComment();
       }
 
       // http 에러 핸들링
@@ -810,6 +837,23 @@ async deleteAll(){
       // 댓글 다이얼로그 닫기
       this.comment_dialog = false;
 
+
+    },
+
+
+    // 댓글 조회 메서드
+    async getComment(){
+
+      // 데이터 변환
+      const COMMENT = {
+        noticeId : this.select_id,  // 해당 게시판 아이디
+        userId : localStorage.getItem("userId"),  // 댓글을 작성한 사람의 아이디
+      }
+
+      // http 통신
+      const response = await this.$axios.post("/api/comment/get", COMMENT);
+      console.log(response.data)
+      this.comments = response.data
 
     }
 
