@@ -199,12 +199,14 @@
           <span class="headline">댓글 목록</span>
         </v-card-title>
         <v-card-text>
+          <v-card-text class="comment-area" ref="commentList">
           <!-- 댓글 목록 -->
-          <v-list>
+          <v-list class="comment-list" >
             <v-list-item
               v-for="comment in comments"
               :key="comment.id"
               class="comment-item"
+              :class="{ 'highlight-author': comment.userId === specialUserId }"
               style="border-bottom: 1px solid #eee;"
             >
               <v-list-item-content>
@@ -216,19 +218,32 @@
                   <strong>시간:</strong> {{ comment.time }}
                 </v-list-item-subtitle>
               </v-list-item-content>
+              <!-- 특정 작성자일 때만 버튼 표시 -->
+              <v-btn
+                v-if="comment.userId === specialUserId"
+                small
+                icon
+                color="primary"
+                @click="handleButtonClick(comment)"
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
             </v-list-item>
           </v-list>
+        </v-card-text>
           <!-- 댓글 추가 -->
           <v-text-field
             v-model="comment_content"
             label="댓글 내용을 입력하세요"
             outlined
+            ref="textField"
             class="mt-4"
+            @keydown.enter="saveComment()"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="saveComment">
+          <v-btn color="blue darken-1" text @click="saveComment" >
             댓글 추가
           </v-btn>
           <v-btn color="red darken-1" text @click="closeComment">
@@ -344,6 +359,8 @@ export default {
       comment_content : '', // 댓글 내용 
 
       comments: [], // 댓글 목록
+
+      specialUserId : '', // 댓글에서 본인 구분 변수
       
     }
   },
@@ -771,20 +788,43 @@ async deleteAll(){
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // 채팅 입력하면 바로 스크롤 내리는 메서드
+    getScroll(){
+      // 스크롤 내리기
+      this.$nextTick(() => {
+        const commentList = this.$refs.commentList;
+          commentList.scrollTop = commentList.scrollHeight;
+        });
+    },
+
+    // 텍스트 필드에 포커스 맞추는 메서드
+    getFocus(){
+      this.$nextTick(() => {
+        this.$refs.textField.focus(); // 다이얼로그 열리면 텍스트 필드에 포커스
+      });
+    },
+
+
     // 댓글 버튼 클릭
     async commentBtn(notice){
 
       // 해당 게시판 id 가져오기
       await this.selectNotice(notice);
 
-      // 댓글 조회 메서드 구현 필요
-      this.getComment();
+      // 댓글 조회 메서드
+      await this.getComment();
+
+      // 댓글 목록에서 본인 구분 초기화
+      this.specialUserId = localStorage.getItem("userId");
 
       // 댓글 다이얼로그 실행
       this.comment_dialog = true;
 
       // 댓글 내용 초기화
       this.comment_content = '';
+
+      // 텍스트 필드 포커싱
+      await this.getFocus();
 
     },
 
@@ -819,7 +859,14 @@ async deleteAll(){
         this.$toast.success(response.data);
 
         // 댓글 최신화(조회 메서드)
-        this.getComment();
+        await this.getComment();
+
+        // 댓글창 초기화
+        this.comment_content = '';
+
+        // 댓글 작성 후 스크롤 내리기
+        await this.getScroll();
+
       }
 
       // http 에러 핸들링
@@ -830,14 +877,10 @@ async deleteAll(){
     },
 
 
-
     // 댓글 다이얼로그 종료 메서드
     async closeComment(){
-
       // 댓글 다이얼로그 닫기
       this.comment_dialog = false;
-
-
     },
 
 
@@ -851,10 +894,14 @@ async deleteAll(){
       }
 
       // http 통신
-      const response = await this.$axios.post("/api/comment/get", COMMENT);
-      console.log(response.data)
-      this.comments = response.data
-
+      try{
+        // 댓글 조회 (http 통신)
+        const response = await this.$axios.post("/api/comment/get", COMMENT);
+        this.comments = response.data
+      }
+      catch(error){
+        this.$toast.error("서버와 통신이 불안정합니다. 다시 시도해주세요.");
+      }
     }
 
 
@@ -961,5 +1008,33 @@ async deleteAll(){
 
 .nav-btn {
   margin: 5px;
+}
+.comment-item {
+  padding: 10px 0;
+}
+
+.highlight-author {
+  background-color: #f0f8ff; /* 연한 파란색 */
+}
+.comment-area {
+  max-height: 400px; /* 댓글 목록 최대 높이 */
+  overflow-y: auto; /* 스크롤 가능 */
+}
+
+.comment-list {
+  padding: 10px 0;
+}
+
+.comment-item {
+  padding: 10px 0;
+}
+
+.highlight-author {
+  background-color: #f0f8ff; /* 특정 작성자 배경색 */
+}
+
+.v-card-actions {
+  border-top: 1px solid #eee; /* 댓글 입력창 상단 구분선 */
+  padding: 10px;
 }
 </style>

@@ -23,6 +23,8 @@ public class CommentServiceImpl implements CommentService{
         return commentRepository.save(commentEntity);
     }
 
+
+    // 시간별로 댓글 조회
     @Override
     public List<CommentDTO> getComments(String noticeId, String userId) {
         // 1. 해당 게시판 ID로 댓글 검색 및 시간순 정렬
@@ -39,17 +41,6 @@ public class CommentServiceImpl implements CommentService{
                 ))
                 .collect(Collectors.toList());
 
-        // 3. 회원 ID를 기준으로 댓글 이동
-        if (userId != null && !userId.isEmpty()) {
-            Optional<CommentDTO> matchingComment = commentDTOs.stream()
-                    .filter(comment -> comment.getUserId().equals(userId))
-                    .findFirst();
-
-            matchingComment.ifPresent(comment -> {
-                commentDTOs.remove(comment);
-                commentDTOs.add(0, comment); // 해당 댓글을 리스트의 맨 앞으로 이동
-            });
-        }
 
         return commentDTOs;
     }

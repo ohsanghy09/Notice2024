@@ -26,6 +26,7 @@ public class CommentController {
         return ResponseEntity.ok("댓글이 등록되었습니다.");
     }
 
+    // 댓글 조회
     @PostMapping("/get")
     public ResponseEntity<List<CommentDTO>> getComments(
             @RequestBody Map<String, String> request) {

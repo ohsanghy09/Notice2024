@@ -10,6 +10,7 @@ public interface CommentService {
     // 댓글 내용 추가
     CommentEntity addComment(CommentEntity commentEntity);
 
+    // 댓글 조회
     List<CommentDTO> getComments(String noticeId, String userId);
 
 }
