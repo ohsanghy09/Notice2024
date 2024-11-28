@@ -1080,6 +1080,8 @@ async deleteAll(){
   created(){
     this.getByNotice(1); // 게시판 조회하는 메서드
     this.selectOption("기본 옵션")
+    // 토큰 검증 함수 실행 
+    this.$checkToken();
   },
   computed: {
     // 현재 페이지에 표시할 버튼들 계산

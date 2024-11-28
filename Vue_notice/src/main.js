@@ -37,8 +37,18 @@ Vue.prototype.$checkToken = async function(){
 
   // 로컬스토리지에 토큰이 존재하지 않을 경우
   if(!token){
+
+    // 기본 메시지
     alert("해당 서비스는 사용자 인증이 필요한 서비스입니다.");
     
+    // 강제 URL로 요청을 보낼 경우
+    if (this.$route.name !== 'home'){
+      alert("로그인 화면으로 이동합니다.");
+      this.$router.push("Login");
+      return;
+    }
+
+    // 홈화면에서 서비스 요청을 보낼 경우
     if(confirm("로그인 화면으로 이동하시겠습니까?")){
       this.$router.push("Login");
       return;

@@ -139,6 +139,11 @@
         }
       },
     },
+
+    created(){
+      // 토큰 검증
+      this.$checkToken();
+    }
   };
   </script>
   

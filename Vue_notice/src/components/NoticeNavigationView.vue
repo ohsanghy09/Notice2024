@@ -804,6 +804,7 @@ async deleteAll(){
   created(){
     this.getByNotice(1); // 공지사항 조회하는 메서드
     this.selectOption("기본 옵션")
+    this.$checkToken();
   },
   computed: {
     // 현재 페이지에 표시할 버튼들 계산
