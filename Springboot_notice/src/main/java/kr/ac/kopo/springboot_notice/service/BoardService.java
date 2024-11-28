@@ -39,4 +39,6 @@ public interface BoardService {
     // start 인덱스를 기반으로 공지사항을 가져옴
     List<BoardEntity> getNoticesByPageAndDate(int start);
 
+    List<Long> getBoardIdsByWriter(String writer); // 작성자를 기준으로 게시판 ID 조회
+
 }

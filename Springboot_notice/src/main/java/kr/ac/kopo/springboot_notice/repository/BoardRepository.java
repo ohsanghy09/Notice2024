@@ -50,5 +50,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     void deleteByWriter(@Param("writer") String writer);
 
 
+    @Query("SELECT b.id FROM BoardEntity b WHERE b.writer = :writer")
+    List<Long> findBoardIdsByWriter(@Param("writer") String writer); // 작성자를 기준으로 게시판 ID 조회
+
+
 
 }

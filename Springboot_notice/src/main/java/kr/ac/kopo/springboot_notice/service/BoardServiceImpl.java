@@ -125,4 +125,9 @@ public class BoardServiceImpl implements BoardService{
         return page.getContent();  // Page 객체에서 실제 데이터 추출
     }
 
+    @Override
+    public List<Long> getBoardIdsByWriter(String writer) {
+        return boardRepository.findBoardIdsByWriter(writer);
+    }
+
 }
