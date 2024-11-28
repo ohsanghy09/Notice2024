@@ -93,7 +93,6 @@
             // 회원탈퇴 (http 통신)
             this.response = await this.$axios.post("/api/user/RemoveUser", UserId);
 
-            console.log(this.response)
 
             // // 통신 후 입력 아이디가 데이터베이스에 존재하지 않을 경우
             if(this.response.status !== 200){

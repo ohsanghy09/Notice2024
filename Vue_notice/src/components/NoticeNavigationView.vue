@@ -648,7 +648,7 @@ async deleteAll(){
       // 현재 선택된 버튼 표시
       this.activeButton = n;
 
-      console.log(`현재 ${n}번 버튼입니다.`);
+      // console.log(`현재 ${n}번 버튼입니다.`);
       
       const start = (n - 1) * 10 + 1 // 공지사항 페이지별 가져와야하는 처음 공지사항의 인덱스
 
@@ -664,7 +664,6 @@ async deleteAll(){
       try{
         const response = await this.$axios.post('/api/notice/getByStart', { start });
         this.notices = response.data
-        console.log(this.notices)
 
         // 가장 최근 공지사항 목록 조회 메서드
         await this.recentNotice();
@@ -704,7 +703,6 @@ async deleteAll(){
       // 현재 검색 메서드 전역 변수로 저장
       this.searchOption = option;
 
-      console.log(this.searchOption)
 
       
 
@@ -729,7 +727,6 @@ async deleteAll(){
         text: this.search_text
       }
 
-      console.log(searchOption)
 
       // 현재 선택된 버튼 표시
       this.activeButton = n;
@@ -737,7 +734,6 @@ async deleteAll(){
       try{
         // 전체 공지사항 개수 가져오기(옵션 전체 공지사항 개수 가져오는 EndPoint)
         const response = await this.$axios.post("/api/notice/searchCount", searchOption)
-        console.log(response.data)
         // 전체 공지사항 개수 / 한 페이지에 표시될 공지사항 개수 = 전체 버튼 개수
         this.totalButton = Math.ceil(response.data / 10) 
       
@@ -764,7 +760,6 @@ async deleteAll(){
 
         // 현재 검색상태 
         this.search_status = true;
-        console.log()
       }catch(error){
         this.$toast.error("서버에 에러가 발생했습니다.");
         return;

@@ -11,6 +11,7 @@
               outlined
               clearable
               dense
+              @keydown.enter="login"
               class="mt-6"
               :rules="[rules.required, rules.minLength]"
               style="font-size: 18px;"
@@ -23,6 +24,7 @@
               outlined
               clearable
               dense
+              @keydown.enter="login"
               class="mt-6"
               :type="showPassword ? 'text' : 'password'"
               :rules="[rules.required, rules.minLength]"

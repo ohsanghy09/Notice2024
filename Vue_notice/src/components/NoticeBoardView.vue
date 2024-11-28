@@ -153,6 +153,7 @@
             label="검색어를 입력해주세요."
             outlined
             dense
+            @keydown.enter="searchBtn(1)"
             hide-details
             class="rounded-xl"
           ></v-text-field>
@@ -503,7 +504,6 @@ export default {
       this.select_writer = notice.writer;
       this.select_content = notice.content;
       this.select_time = notice.time;
-      console.log(this.select_id)
     },
 
     // 수정 버튼을 클릭하면 나타나는 메서드(수정 다이얼로그 출력)
@@ -911,7 +911,6 @@ async deleteAll(){
 
         // 댓글 저장 (http 통신)
         const response = await this.$axios.post('/api/comment/add', COMMENT);
-        console.log(response)
         this.$toast.success(response.data);
 
         // 댓글 최신화(조회 메서드)
@@ -1000,7 +999,7 @@ async deleteAll(){
         await this.getComment();
 
         // 안내 문구
-        this.$toast.info("댓글이 수정되었습니다.");
+        this.$toast.success("댓글이 수정되었습니다.");
 
         // 다이얼로그 종료
         this.update_comment_dialog = false;

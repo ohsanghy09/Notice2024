@@ -26,6 +26,8 @@ public class SecurityConfig {
         http
                 .csrf().disable() // CSRF 비활성화 (테스트용, 필요에 따라 활성화)
                 .authorizeHttpRequests(auth -> auth
+                        // 정적 파일과 루트 경로 허용
+                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/img/**", "/favicon.ico").permitAll()
                         .requestMatchers("/api/user/**", "api/security/**", "api/notice/**", "api/comment/**", "api/board/**").permitAll() // 공개 엔드포인트
                         .anyRequest().authenticated() // 나머지는 인증 필요
                 )
