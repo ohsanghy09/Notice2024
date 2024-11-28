@@ -19,4 +19,7 @@ public interface CommentService {
     // 댓글 삭제
     void deleteComment(CommentDTO commentDTO);
 
+    // 게시판 삭제되면 해당 게시판 댓글 삭제
+    void deleteAllNoticesByNoticeId(String noticeId);
+
 }

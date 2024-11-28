@@ -10,4 +10,7 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     // 게시판 ID로 댓글 조회
     List<CommentEntity> findByNoticeIdOrderByTimeAsc(String noticeId);
 
+    // 게시판 ID로 게시판 댓글 전체 삭제
+    void deleteByNoticeId(String noticeId);
+
 }

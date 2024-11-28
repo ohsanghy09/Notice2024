@@ -1,5 +1,6 @@
 package kr.ac.kopo.springboot_notice.service;
 
+import jakarta.transaction.Transactional;
 import kr.ac.kopo.springboot_notice.dto.CommentDTO;
 import kr.ac.kopo.springboot_notice.entity.CommentEntity;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
@@ -68,6 +69,13 @@ public class CommentServiceImpl implements CommentService{
         CommentEntity Comment = optionalComment.get();
         // 댓글 삭제
         commentRepository.deleteById(Comment.getId());
+    }
+
+    // 해당 게시판이 삭제되면 게시판 관련 댓글 삭제
+    @Override
+    @Transactional // 트랜잭션 활성화
+    public void deleteAllNoticesByNoticeId(String noticeId) {
+        commentRepository.deleteByNoticeId(noticeId);
     }
 
 

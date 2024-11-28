@@ -4,6 +4,7 @@ import kr.ac.kopo.springboot_notice.dto.SearchDTO;
 import kr.ac.kopo.springboot_notice.entity.BoardEntity;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
 import kr.ac.kopo.springboot_notice.service.BoardService;
+import kr.ac.kopo.springboot_notice.service.CommentService;
 import kr.ac.kopo.springboot_notice.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,9 @@ public class BoardController {
     @Autowired
     private BoardService boardService;
 
+    @Autowired
+    private CommentService commentService;
+
     // 공지사항 수정
     @PostMapping("/update")
     public ResponseEntity<BoardEntity> updateBoard(@RequestBody BoardEntity boardEntity) {
@@ -33,6 +37,7 @@ public class BoardController {
     public ResponseEntity<Void> deleteNoticeById(@RequestBody Map<String, Long> requestBody) {
         Long id = requestBody.get("id");
         boardService.deleteNoticeById(id);
+        commentService.deleteAllNoticesByNoticeId(String.valueOf(id));
         return ResponseEntity.ok().build();
     }
 
