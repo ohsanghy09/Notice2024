@@ -49,5 +49,8 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
     void deleteByWriter(@Param("writer") String writer);
 
 
+    // 게시판 데이터베이스에서 작성자가 있을 경우.
+    boolean existsByWriter(String writer);
+
 
 }

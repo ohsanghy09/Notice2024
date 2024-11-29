@@ -2,6 +2,7 @@ package kr.ac.kopo.springboot_notice.controller;
 
 import kr.ac.kopo.springboot_notice.dto.SearchDTO;
 import kr.ac.kopo.springboot_notice.entity.NoticeEntity;
+import kr.ac.kopo.springboot_notice.service.BoardService;
 import kr.ac.kopo.springboot_notice.service.NoticeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,14 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notice")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:3000")
 public class NoticeController {
 
     @Autowired
     private NoticeService noticeService;
+
+    @Autowired
+    private BoardService boardService;
 
     // 공지사항 수정
     @PostMapping("/update")
@@ -46,8 +50,16 @@ public class NoticeController {
     public ResponseEntity<Void> deleteNoticesByWriter(@RequestBody Map<String, String> request) {
         String writer = request.get("writer"); // 요청 본문에서 작성자(writer) 가져오기
         try {
-            noticeService.deleteRecordsByWriter(writer);
-            return ResponseEntity.noContent().build(); // 204 No Content 반환
+
+            // 해당 데이터 테이블에 작성자가 있다면
+            if(noticeService.writerExists(writer)){
+                noticeService.deleteRecordsByWriter(writer);
+                return ResponseEntity.ok().build();
+            }
+            else{
+                return ResponseEntity.noContent().build(); // 204 No Content 반환
+            }
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 오류 시 500 반환
         }

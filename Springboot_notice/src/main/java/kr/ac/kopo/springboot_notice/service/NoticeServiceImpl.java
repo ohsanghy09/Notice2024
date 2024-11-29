@@ -125,4 +125,10 @@ public class NoticeServiceImpl implements NoticeService{
         return page.getContent();  // Page 객체에서 실제 데이터 추출
     }
 
+    // 게시판 데이터테이블에서 작성자가 있는지 확인 -> 작성자가 존재하지 않을 경우 204 반환
+    @Override
+    public boolean writerExists(String writer) {
+        return noticeRepository.existsByWriter(writer);
+    }
+
 }

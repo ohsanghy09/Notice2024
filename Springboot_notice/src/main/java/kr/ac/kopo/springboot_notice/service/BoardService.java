@@ -41,4 +41,7 @@ public interface BoardService {
 
     List<Long> getBoardIdsByWriter(String writer); // 작성자를 기준으로 게시판 ID 조회
 
+    // 게시판 테이블에 작성자가 있는 테이블이 있는지 확인
+    boolean writerExists(String writer);
+
 }

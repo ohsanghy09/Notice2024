@@ -38,4 +38,7 @@ public interface NoticeService {
     // start 인덱스를 기반으로 공지사항을 가져옴
     List<NoticeEntity> getNoticesByPageAndDate(int start);
 
+    // 게시판 테이블에 작성자가 있는 테이블이 있는지 확인
+    boolean writerExists(String writer);
+
 }

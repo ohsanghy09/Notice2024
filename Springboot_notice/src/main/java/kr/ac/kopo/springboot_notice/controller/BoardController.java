@@ -16,7 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/board")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BoardController {
 
     @Autowired
@@ -53,20 +53,28 @@ public class BoardController {
     public ResponseEntity<Void> deleteNoticesByWriter(@RequestBody Map<String, String> request) {
         String writer = request.get("writer"); // 요청 본문에서 작성자(writer) 가져오기
         try {
-            // 작성자를 기준으로 게시판 ID 추출
-            List<Long> boardIds = boardService.getBoardIdsByWriter(writer);
+
+            if(boardService.writerExists(writer)){
+                // 작성자를 기준으로 게시판 ID 추출
+                List<Long> boardIds = boardService.getBoardIdsByWriter(writer);
 
 
-            // 추출한 게시판 ID로 댓글 삭제
-            for (Long id : boardIds) {
-                System.out.println("★★★★" + id);
-                commentService.deleteAllNoticesByNoticeId(id.toString());
+                // 추출한 게시판 ID로 댓글 삭제
+                for (Long id : boardIds) {
+                    System.out.println("★★★★" + id);
+                    commentService.deleteAllNoticesByNoticeId(id.toString());
+                }
+
+                // 게시판 삭제
+                boardService.deleteRecordsByWriter(writer);
+
+                return ResponseEntity.ok().build();
+
+            }else {
+                return ResponseEntity.noContent().build(); // 204 No Content 반환
             }
 
-            // 게시판 삭제
-            boardService.deleteRecordsByWriter(writer);
 
-            return ResponseEntity.noContent().build(); // 204 No Content 반환
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 오류 시 500 반환
         }

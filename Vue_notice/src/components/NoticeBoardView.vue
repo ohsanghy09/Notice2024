@@ -665,12 +665,18 @@ async deleteAll(){
           writer : user
         }
 
-          await this.$axios.post('/api/board/deleteAll', USER)
-          await this.getByNotice(1);
-          this.$toast.success("게시판 목록이 전체 삭제 되었습니다.");
-          
-          // 현재 선택한 게시판 삭제
-          this.select_id = ''
+      const response = await this.$axios.post('/api/board/deleteAll', USER)
+
+      if(response.status !== 200){
+        this.$toast.error("삭제할 데이터가 없습니다.");
+        return;
+      }
+
+      await this.getByNotice(1);
+      this.$toast.success("게시판 목록이 전체 삭제 되었습니다.");
+      
+      // 현재 선택한 게시판 삭제
+      this.select_id = ''
   }
 
   

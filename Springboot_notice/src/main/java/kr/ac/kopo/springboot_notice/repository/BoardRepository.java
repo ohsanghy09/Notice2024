@@ -53,6 +53,9 @@ public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
     @Query("SELECT b.id FROM BoardEntity b WHERE b.writer = :writer")
     List<Long> findBoardIdsByWriter(@Param("writer") String writer); // 작성자를 기준으로 게시판 ID 조회
 
+    // 게시판 데이터베이스에서 작성자가 있을 경우.
+    boolean existsByWriter(String writer);
+
 
 
 }

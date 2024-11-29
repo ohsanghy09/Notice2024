@@ -125,9 +125,15 @@ public class BoardServiceImpl implements BoardService{
         return page.getContent();  // Page 객체에서 실제 데이터 추출
     }
 
+    // 작성자를 기준으로 게시판 ID 조회
     @Override
     public List<Long> getBoardIdsByWriter(String writer) {
         return boardRepository.findBoardIdsByWriter(writer);
+    }
+    // 게시판 데이터테이블에서 작성자가 있는지 확인 -> 작성자가 존재하지 않을 경우 204 반환
+    @Override
+    public boolean writerExists(String writer) {
+        return boardRepository.existsByWriter(writer);
     }
 
 }

@@ -572,16 +572,26 @@ this.$toast.error("서버 통신에서 에러가 발생했습니다. 다시 시�
 // 전체 삭제
 async deleteAll(){
 
+  if(confirm(`${localStorage.getItem('userId')}님께서 만든 공지사항 내용들을 전체 삭제 하시겠습니까?`)){
+
   // 데이터 변환
   const USER = {
     writer : localStorage.getItem('userId')
   }
 
-    await this.$axios.post('/api/notice/deleteAll', USER)
+    const response = await this.$axios.post('/api/notice/deleteAll', USER);
+
+    if(response.status !== 200){
+        this.$toast.error("삭제할 데이터가 없습니다.");
+        return;
+      }
+
+
     await this.getByNotice(1);
     this.$toast.success("공지사항 목록이 전체 삭제 되었습니다.");
     // 현재 선택한 공지사항 삭제
     this.select_id = ''
+  }
 
   },
   // 가장 최근 등록된 공지사항 관련 메서드
